@@ -684,8 +684,10 @@ void EBstats(int lCs) {
 
 // PROJECT
   void showLacing(float w) {
+    float weaveCounter = 0;
     strokeWeight(r);
     for (int c=0; c<nc; c++) { 
+      if(weaveCounter<=weaveTimer){
       pt A=ccg(s(n(c))), C = ccg(c), B = ccg(n(s(c))), CA = midPt(A,C), BC = midPt(B,C); //<>//
       vec NA = U(triNorm(cg(s(n(c))),cg(n(s(n(c)))),cg(n(n(s(n(c)))))));
       vec NB = U(triNorm(cg(n(s(c))),cg(n(n(s(c)))),cg(n(n(n(s(c)))))));
@@ -697,6 +699,8 @@ void EBstats(int lCs) {
       pt BC1 = S(BC,-5,NC);
       
       stroke(green); showEdge(C,CA1); showEdge(CA1,A); stroke(red); showEdge(C,BC1); showEdge(BC1, B); 
+      }
+      weaveCounter++;
       }
       
     // bend curves so that red edges goes below the blue edge and green goes above it    

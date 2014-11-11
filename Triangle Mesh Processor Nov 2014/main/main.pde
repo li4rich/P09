@@ -3,7 +3,7 @@
 import processing.opengl.*;                // load OpenGL
 String [] fn=  {"bunny.vts","horse.vts","torus.vts","tet.vts","fandisk.vts","squirrel.vts","venus.vts"};
 int fni=0; int fniMax=fn.length;  
-
+float weaveTimer = 0;
 // ** SETUP **
 void setup() { size(800, 800, OPENGL); setColors(); sphereDetail(6); //smooth();
   PFont font = loadFont("Courier-14.vlw"); textFont(font, 12);  // font for writing labels on screen
@@ -13,6 +13,7 @@ void setup() { size(800, 800, OPENGL); setColors(); sphereDetail(6); //smooth();
  
 // ** DRAW **
 void draw() {
+  if(showLace) weaveTimer++; else weaveTimer = 0;
   background(white); 
   perspective(PI/2.0,width/height,1.0,6.0*Rbox); 
   if (showHelpText) {camera(); translate(-290,-290,0); scale(1.7,1.7,1.0); showHelp(); showColors();  return; };
