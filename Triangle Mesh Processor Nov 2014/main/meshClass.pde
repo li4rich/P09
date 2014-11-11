@@ -3,7 +3,7 @@ int showSkeletOnly=1;
 int rings=1;                               // number of rings for colorcoding
 int r=10;                                // radius of spheres for displaying vertices
 float w=10;  // width of ribbon
-boolean showNormals=false, showVertices=false, showEdges=false, showTriangles=true,  showSelectedTriangle=true, showLabels=false, showPath=false;  // flags for rendering
+boolean showNormals=false, showVertices=false, showEdges=false, showTriangles=true,  showSelectedTriangle=true, showLabels=false, showPath=false, showRibbon=false, showDefaultRibbon = true;  // flags for rendering
 boolean showSkeleton=true, showSelectedLake=true, showOtherLakes=true, showDistance=false, showEB=false, showEBrec=false, showClusters=true, showLace=false;
 Mesh M = new Mesh();     // creates a default triangle mesh
 
@@ -74,7 +74,9 @@ void show() {
      showLacing(w);  // at bottom of class
      return;
      }
-   if(showDistance) for(int t=0; t<nt; t++) {if(Mt[t]==0) fill(10,255,255); else fill(60,120,(rings-Mt[t])*120/rings); shade(t);};  
+     
+   if(showRibbon){ showRibboning(M.sc);}
+   if(showDistance) {if(showDefaultRibbon){for(int t=0; t<nt; t++) {if(Mt[t]==0) fill(10,255,255); else fill(60,120,(rings-Mt[t])*120/rings); shade(t);};}else { for(int t=0; t<nt; t++) {if(Mt[t]!=0){ fill(60,120,(rings-Mt[t])*120/rings); shade(t);}} } }  //************Shades The Triangles along showPath
    if(showEB&&!showDistance) {
       for(int t=0; t<nt; t++) {fill(cyan);
          if (triangleSymbol[t]=='w') {fill(white);};
@@ -397,7 +399,7 @@ void computePath() {
   int r=1;
   boolean searching=true;
   while (searching) {
-     for(int i=0; i<nc; i++) {
+     for(int i=0; i<nc; i++) { // for all corners in the mesh
        if (searching&&(Mt[t(i)]==0)&&(o(i)!=i)) {
          if(Mt[t(o(i))]==r) {
            Mt[t(i)]=r+1; 
@@ -712,6 +714,38 @@ void EBstats(int lCs) {
     // animate fly through the path of a loop
     
     strokeWeight(1);
+    }
+    
+    void showRibboning(int x)
+    {
+      //searching loop
+        for(int i=0; i<nt; i++) {Mt[i]=0;}; Mt[t(prevc)]=1; // Mt[0]=1;
+        for(int i=0; i<nc; i++) {P[i]=false;};
+        int r=1;
+        boolean searching=true;
+        while (searching) {
+           for(int i=0; i<nc; i++) { // for all corners in the mesh
+             if (searching&&(Mt[t(i)]==0)&&(o(i)!=i)) {
+               if(Mt[t(o(i))]==r) {
+                 Mt[t(i)]=r+1; 
+                 P[i]=true; 
+                 if(t(i)==t(c)){searching=false;};
+                 };
+               };
+             };
+           r++;
+           };
+        for(int i=0; i<nt; i++) {Mt[i]=0;};
+        rings=1;
+        int b=c;
+        int k=0;
+         while (t(b)!=t(prevc)) {rings++;  
+         if (P[b]) {b=o(b); print(".o");} else {if (P[p(b)]) {b=r(b);print(".r");} else {b=l(b);print(".l");};}; Mt[t(b)]=rings; };
+         
+   /*
+       // rendering
+      for(int t=0; t<nt; t++) {if(Mt[t]==0) fill(10,255,255); else fill(60,120,(rings-Mt[t])*120/rings); shade(t);}; // shades the triangles along the ribbon
+      */
     }
     
   }  // ==== END OF MESH CLASS

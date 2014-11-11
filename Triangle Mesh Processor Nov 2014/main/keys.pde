@@ -48,7 +48,7 @@ void keys() {
   if (key=='t') {};  
   if (key=='u') {M.unswing();};   
  // if (key=='v') {};  // used in updateView 
-  if (key=='w') {};  
+  if (key=='w') {if(!showRibbon){showRibbon = true; showDefaultRibbon = false; M.showDistance = true;}else{ showRibbon=false; M.showDistance = false; showDefaultRibbon = true;}};  //Chris Tansey Test Key
   if (key=='x') {};   
   if (key=='y') {};   
 //  if (key=='z') {};   // used in updateView
