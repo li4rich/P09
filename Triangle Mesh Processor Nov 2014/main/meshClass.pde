@@ -688,7 +688,9 @@ void EBstats(int lCs) {
   void showLacing(float w) {
     float weaveCounter = 0;
     strokeWeight(r);
-    for (int c=0; c<nc; c++) { 
+    int c = 0;
+    boolean swung = false;
+    do { 
       if(weaveCounter<=weaveTimer){
       pt A=ccg(s(n(c))), C = ccg(c), B = ccg(n(s(c))), CA = midPt(A,C), BC = midPt(B,C); //<>//
       vec NA = U(triNorm(cg(s(n(c))),cg(n(s(n(c)))),cg(n(n(s(n(c)))))));
@@ -703,7 +705,10 @@ void EBstats(int lCs) {
       stroke(green); showEdge(C,CA1); showEdge(CA1,A); stroke(red); showEdge(C,BC1); showEdge(BC1, B); 
       }
       weaveCounter++;
-      }
+      if(swung) {c = o(n(c)); swung=false;}
+      else { c= s(c); swung = true;}
+      
+      } while (c!=0);
       
     // bend curves so that red edges goes below the blue edge and green goes above it    
     // trace curves and assign a different color to each (computed when 'w' is pressed)
