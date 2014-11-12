@@ -75,7 +75,7 @@ void show() {
      return;
      }
      
-   if(showRibbon){ showRibboning(M.sc);}
+   //if(showRibbon){ showRibboning(M.sc);}
    if(showDistance) {if(showDefaultRibbon){for(int t=0; t<nt; t++) {if(Mt[t]==0) fill(10,255,255); else fill(60,120,(rings-Mt[t])*120/rings); shade(t);};}else { for(int t=0; t<nt; t++) {if(Mt[t]!=0){ fill(60,120,(rings-Mt[t])*120/rings); shade(t);}} } }  //************Shades The Triangles along showPath
    if(showEB&&!showDistance) {
       for(int t=0; t<nt; t++) {fill(cyan);
@@ -692,17 +692,26 @@ void EBstats(int lCs) {
     boolean swung = false;
     do { 
       if(weaveCounter<=weaveTimer){
-      pt A=ccg(s(n(c))), C = ccg(c), B = ccg(n(s(c))), CA = midPt(A,C), BC = midPt(B,C); //<>//
-      vec NA = U(triNorm(cg(s(n(c))),cg(n(s(n(c)))),cg(n(n(s(n(c)))))));
-      vec NB = U(triNorm(cg(n(s(c))),cg(n(n(s(c)))),cg(n(n(n(s(c)))))));
-      vec NC = V(NA);
-      NC.add(NB);
-      NC = U(NC);
+      int a=s(n(c)), b = n(s(c));
+      pt A=ccg(s(n(c))), C = ccg(c), B = ccg(n(s(c))), CA = midPt(G[v(s(n(c)))],G[v(c)]), BC = midPt(G[v(n(s(c)))],G[v(c)]); //<>//
+      vec NAv = U(Nv[v(s(n(c)))]);  //normals of the verticies associated with A,B,C
+      vec NBv = U(Nv[v(n(s(c)))]);
+      vec NCv = U(Nv[v(c)]);
+      vec NCA = NCv;
+      vec NCB = NCv;
+      NCA.add(NAv);
+      NCB.add(NBv);
       
-      pt CA1 = S(CA,5,NC);
-      pt BC1 = S(BC,-5,NC);
+      vec NA = U(triNorm(G[v(a)],G[v(n(a))],G[v(n(n(a)))]); //normals of pt A,B and C (inside the corner
+      vec NB = U(triNorm(G[v(b)],G[v(n(b))],G[v(n(n(b)))]); //gonna be used for hermite i think
+      vec NC = U(triNorm(G[v(c)],G[v(n(c))],G[v(n(n(c)))]);
       
-      stroke(green); showEdge(C,CA1); showEdge(CA1,A); stroke(red); showEdge(C,BC1); showEdge(BC1, B); 
+      //these are the offsetted points
+      pt CA1 = S(CA,2,NCA); //use NCA for hermite with this
+      pt BC1 = S(BC,-2,NCB); //use NCB
+      
+      if(swung) 
+       if(!showRibbon) {stroke(green); showEdge(C,CA1); showEdge(CA1,A); stroke(red); showEdge(C,BC1); showEdge(BC1, B); }
       }
       weaveCounter++;
       if(swung) {c = o(n(c)); swung=false;}
