@@ -3,7 +3,7 @@ int showSkeletOnly=1;
 int rings=1;                               // number of rings for colorcoding
 int r=10;                                // radius of spheres for displaying vertices
 float w=10;  // width of ribbon
-boolean showNormals=false, showVertices=false, showEdges=false, showTriangles=true,  showSelectedTriangle=true, showLabels=false, showPath=false, showRibbon=false, showDefaultRibbon = true;  // flags for rendering
+boolean showNormals=false, showVertices=false, showEdges=false, showTriangles=true,  showSelectedTriangle=true, showLabels=false, showPath=false, showRibbon=false, showDefaultRibbon = false;  // flags for rendering
 boolean showSkeleton=true, showSelectedLake=true, showOtherLakes=true, showDistance=false, showEB=false, showEBrec=false, showClusters=true, showLace=false;
 Mesh M = new Mesh();     // creates a default triangle mesh
 
@@ -689,35 +689,91 @@ void EBstats(int lCs) {
     float weaveCounter = 0;
     strokeWeight(r);
     int c = 0;
+    int cStart = c;
     boolean swung = false;
     do { 
       if(weaveCounter<=weaveTimer){
-      int a=s(n(c)), b = n(s(c));
-      pt A=ccg(s(n(c))), C = ccg(c), B = ccg(n(s(c))), CA = midPt(G[v(s(n(c)))],G[v(c)]), BC = midPt(G[v(n(s(c)))],G[v(c)]); //<>//
-      vec NAv = U(Nv[v(s(n(c)))]);  //normals of the verticies associated with A,B,C
-      vec NBv = U(Nv[v(n(s(c)))]);
-      vec NCv = U(Nv[v(c)]);
-      vec NCA = NCv;
-      vec NCB = NCv;
-      NCA.add(NAv);
-      NCB.add(NBv);
-      
-      vec NA = U(triNorm(G[v(a)],G[v(n(a))],G[v(n(n(a)))]); //normals of pt A,B and C (inside the corner
-      vec NB = U(triNorm(G[v(b)],G[v(n(b))],G[v(n(n(b)))]); //gonna be used for hermite i think
-      vec NC = U(triNorm(G[v(c)],G[v(n(c))],G[v(n(n(c)))]);
-      
-      //these are the offsetted points
-      pt CA1 = S(CA,2,NCA); //use NCA for hermite with this
-      pt BC1 = S(BC,-2,NCB); //use NCB
-      
-      if(swung) 
-       if(!showRibbon) {stroke(green); showEdge(C,CA1); showEdge(CA1,A); stroke(red); showEdge(C,BC1); showEdge(BC1, B); }
+        int a=s(n(c)), b = n(s(c));
+        pt A=ccg(s(n(c))), C = ccg(c), B = ccg(n(s(c))), CA = midPt(G[v(s(n(c)))],G[v(c)]), CB = midPt(G[v(n(s(c)))],G[v(c)]); //<>//
+        vec NAv = U(Nv[v(s(n(c)))]);  //normals of the verticies associated with A,B,C
+        vec NBv = U(Nv[v(n(s(c)))]);
+        vec NCv = U(Nv[v(c)]);
+        vec NCA = NCv;
+        vec NCB = NCv;
+        NCA.add(NAv);
+        NCB.add(NBv);
+        
+        vec NA = triNorm(G[v(a)],G[v(n(a))],G[v(n(n(a)))]); //normals of pt A,B and C (inside the corner
+        vec NB = triNorm(G[v(b)],G[v(n(b))],G[v(n(n(b)))]); //gonna be used for hermite i think
+        vec NC = triNorm(G[v(c)],G[v(n(c))],G[v(n(n(c)))]);
+        
+        //these are the offsetted points
+        pt CA1 = S(CA,2,NCA); 
+        pt CB1 = S(CB,-2,NCB); 
+        
+        vec vCtoCA = V(C,CA);
+        vec TCCA = C(NC,C(vCtoCA,NC));
+        vec vCAtoA = V(CA,A);
+        vec TCAA = C(NCA,C(vCAtoA,NCA));
+        
+        pt next = ccg(n(s(a)));
+        vec AtoN = V(A,next);
+        vec TAN = C(NA,C(AtoN,NA));
+        
+        vec vBtoCB = V(B,CB);
+        vec TBCB = C(NB,C(vBtoCB,NB));
+        vec vCBtoC = V(CB,C);
+        vec TCBC = C(NCB,C(vCAtoA,NCB));
+        float scale = 10; //the tangents  //switch to .03 or something around there the other way
+        //stroke(blue); showLineFrom(C,S(.01,NC));
+        if(swung) {
+         if(!showRibbon) {
+           pt greenPt01 = P(C); //switch to A the other way
+           pt greenPt02 = P(CA1);
+           
+           pt redPt01 = P(B);  // switch to C the other way
+           pt redPt02 = P(CB1);
+           
+           for (float s=0; s<1; s+=.02){
+             float h1 =  2*pow(s,3) - 3*pow(s,2) + 1;                 // calculate basis function 1
+             float h2 = -2*pow(s,3) + 3*pow(s,2);                    // calculate basis function 2
+             float h3 =   pow(s,3) - 2*pow(s,2) + s;                // calculate basis function 3
+             float h4 =   pow(s,3) -  pow(s,2);                    // calculate basis function 4
+             pt greenPt1 = S(S(A(S(h1,P(C)), S(h2,P(CA1))),h3,S(scale,U(TCCA))),h4,S(scale,U(TCAA)));           // P = h1*P0 + h2*P1 + h3*T0 + h4*T1
+             pt greenPt2 = S(S(A(S(h1,P(CA1)), S(h2,P(A))),h3,S(scale,U(TCAA))),h4,S(scale,U(TAN)));
+             pt redPt1 = S(S(A(S(h1,P(B)), S(h2,P(CB1))),h3,S(scale,U(TBCB))),h4,S(scale,U(TCBC)));            //*********this isnt done!!!!*********
+             pt redPt2 = S(S(A(S(h1,P(CB1)), S(h2,P(C))),h3,S(scale,U(TCBC))),h4,S(scale,U(TCCA)));
+             stroke(green); showEdge(greenPt01,greenPt1); showEdge(greenPt02,greenPt2); 
+             stroke(red); showEdge(redPt01,redPt1); showEdge(redPt02, redPt2); 
+             greenPt01=P(greenPt1);
+             greenPt02=P(greenPt2);
+             redPt01=P(redPt1);
+             redPt02=P(redPt2);
+             
+             
+             
+             //*************I CANT FIGURE OUT WHICH WAY IS THE RIGHT WAY, BUT IVE DONE BOTH*****************
+             
+             //pt greenPt11 = S(S(A(S(h1,P(A)), S(h2,P(C))),h3,S(scale,NA)),h4,S(-1*scale,NC));           // P = h1*P0 + h2*P1 + h3*T0 + h4*T1
+             
+             //pt redPt11 = S(S(A(S(h1,P(C)), S(h2,P(B))),h3,S(-1*scale,NC)),h4,S(scale,NB));            //*********this isnt done!!!!*********
+    
+             //stroke(green); 
+             //showEdge(greenPt01,greenPt11);
+             //stroke(red); 
+             //showEdge(redPt01,redPt11);
+             
+             //greenPt01=P(greenPt11);
+             //redPt01=P(redPt11);
+             }
+          }
+        }
       }
       weaveCounter++;
       if(swung) {c = o(n(c)); swung=false;}
       else { c= s(c); swung = true;}
       
-      } while (c!=0);
+      } while (c!=cStart);
       
     // bend curves so that red edges goes below the blue edge and green goes above it    
     // trace curves and assign a different color to each (computed when 'w' is pressed)
