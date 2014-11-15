@@ -734,6 +734,11 @@ void EBstats(int lCs) {
            pt redPt01 = P(B);  // switch to C the other way
            pt redPt02 = P(CB1);
            
+           float ACCA = a(NC,NCA);     //angles for ribbons
+           float ACAA = a(NCA,A);
+           float ABCB = a(NB,NCB);
+           float ACBC = a(NCB,NC);
+           
            for (float s=0; s<1; s+=.02){
              float h1 =  2*pow(s,3) - 3*pow(s,2) + 1;                 // calculate basis function 1
              float h2 = -2*pow(s,3) + 3*pow(s,2);                    // calculate basis function 2
@@ -741,22 +746,27 @@ void EBstats(int lCs) {
              float h4 =   pow(s,3) -  pow(s,2);                    // calculate basis function 4
              pt greenPt1 = S(S(A(S(h1,P(C)), S(h2,P(CA1))),h3,S(scale,U(TCCA))),h4,S(scale,U(TCAA)));           // P = h1*P0 + h2*P1 + h3*T0 + h4*T1
              pt greenPt2 = S(S(A(S(h1,P(CA1)), S(h2,P(A))),h3,S(scale,U(TCAA))),h4,S(scale,U(TAN)));
-             pt redPt1 = S(S(A(S(h1,P(B)), S(h2,P(CB1))),h3,S(scale,U(TBCB))),h4,S(scale,U(TCBC)));            //*********this isnt done!!!!*********
+             pt redPt1 = S(S(A(S(h1,P(B)), S(h2,P(CB1))),h3,S(scale,U(TBCB))),h4,S(scale,U(TCBC)));            
              pt redPt2 = S(S(A(S(h1,P(CB1)), S(h2,P(C))),h3,S(scale,U(TCBC))),h4,S(scale,U(TCCA)));
-             stroke(green); showEdge(greenPt01,greenPt1); showEdge(greenPt02,greenPt2); 
-             stroke(red); showEdge(redPt01,redPt1); showEdge(redPt02, redPt2); 
+             
+             
+             if(!showRibbon){
+               stroke(green); showEdge(greenPt01,greenPt1); showEdge(greenPt02,greenPt2); 
+               stroke(red); showEdge(redPt01,redPt1); showEdge(redPt02, redPt2); 
+             } else {
+               
+             }
+             
              greenPt01=P(greenPt1);
              greenPt02=P(greenPt2);
              redPt01=P(redPt1);
              redPt02=P(redPt2);
              
-             
-             
              //*************I CANT FIGURE OUT WHICH WAY IS THE RIGHT WAY, BUT IVE DONE BOTH*****************
              
              //pt greenPt11 = S(S(A(S(h1,P(A)), S(h2,P(C))),h3,S(scale,NA)),h4,S(-1*scale,NC));           // P = h1*P0 + h2*P1 + h3*T0 + h4*T1
              
-             //pt redPt11 = S(S(A(S(h1,P(C)), S(h2,P(B))),h3,S(-1*scale,NC)),h4,S(scale,NB));            //*********this isnt done!!!!*********
+             //pt redPt11 = S(S(A(S(h1,P(C)), S(h2,P(B))),h3,S(-1*scale,NC)),h4,S(scale,NB));           
     
              //stroke(green); 
              //showEdge(greenPt01,greenPt11);
