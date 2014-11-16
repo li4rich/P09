@@ -1,5 +1,6 @@
 // Triangle mesh viewer + corner table + subdivision + smoothing + simplificatioin + geodesics + isolation
 // Written by Jarek Rossignac June 2006. Last modified November 2014
+
 import processing.opengl.*;                // load OpenGL
 String [] fn=  {"bunny.vts","horse.vts","torus.vts","tet.vts","fandisk.vts","squirrel.vts","venus.vts"};
 int fni=0; int fniMax=fn.length;  
