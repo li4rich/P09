@@ -42,7 +42,7 @@ void keys() {
   if (key=='n') {M.next();};  
   if (key=='o') {M.opposite(); if (jumps) C.jump(M); };  
   if (key=='p') {M.previous();};  
-  if (key=='q') {};   
+  if (key=='q') {M.calcLoop();};   
   if (key=='r') {M.right(); if (jumps) C.jump(M);}; 
   if (key=='s') {M.swing();};   // select current corner
   if (key=='t') {};  
@@ -50,7 +50,7 @@ void keys() {
  // if (key=='v') {};  // used in updateView 
   if (key=='w') {if(!showRibbon){showRibbon = true; showDefaultRibbon = false; M.showDistance = true;}else{ showRibbon=false; M.showDistance = false; showDefaultRibbon = true;}};  //Chris Tansey Test Key
   if (key=='x') {};   
-  if (key=='y') {};   
+  if (key=='y') {M.loops.remove(M.loops.size()-1);};   
 //  if (key=='z') {};   // used in updateView
 
   if (key=='A') {M.saveMesh(); println("archive mesh to file");  };  
@@ -77,7 +77,7 @@ void keys() {
   if (key=='V') {M.showVertices=!M.showVertices; if(M.showVertices) println("showing vertices"); else println("not showing vertices"); };  
   if (key=='W') {showLace=!showLace;};  
   if (key=='X') {String S="mesh"+"-####.tif"; saveFrame(S); println("saved a picture");};   ;
-  if (key=='Y') {}; 
+  if (key=='Y') {M.loops.clear();}; 
   if (key=='Z') {C.F.setToPoint(Cbox); C.D=Rbox*2; C.U.setTo(0,1,0); C.E.setToPoint(C.F); C.E.addVec(new vec(0,0,1)); C.pullE(); C.pose(); println("resert view"); }; 
 
   if (keyCode==LEFT) {M.left(); M.right(); M.left(); if (jumps) {C.jump(M);};};

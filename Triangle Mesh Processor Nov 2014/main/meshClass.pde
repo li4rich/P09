@@ -10,12 +10,15 @@ Mesh M = new Mesh();     // creates a default triangle mesh
 
 //========================== class MESH ===============================
 class Mesh {
+  
+  ArrayList<ArrayList<LoopPt>> loops;
 
 //  ==================================== INIT, CREATE, COPY ====================================
  Mesh() {}
  void declare() {
    for (int i=0; i<maxnv; i++) {G[i]=new pt(0,0,0); Nv[i]=new vec(0,0,0);};   // init vertices and normals
    for (int i=0; i<maxnt; i++) {Nt[i]=new vec(0,0,0);  };       // init triangle normals and skeleton lab els
+   loops = new ArrayList<ArrayList<LoopPt>>();
    }
  void makeGrid (int w) { // make a 2D grid of vertices
   for (int i=0; i<w; i++) {for (int j=0; j<w; j++) { G[w*i+j].setTo(height*.8*j/(w-1)+height/10,height*.8*i/(w-1)+height/10,0);}}    
@@ -687,11 +690,118 @@ void EBstats(int lCs) {
 
 // PROJECT
   void showLacing(float w) {
-    float weaveCounter = 0;
+    int weaveCounter = 0;
     strokeWeight(r);
-    int c = 0;
-    int cStart = c;
-    ArrayList<LoopPt> loop = new ArrayList<LoopPt>();
+    //int c = 0;
+    
+   
+      
+      /*
+      fill(blue);
+      for (int i=0; i<loop.size()-1;i++){
+        stroke(blue);
+        P(loop.get(i).p).show(1);
+        if(i%4>1) stroke(green);
+        else stroke(red);
+       
+        //showLineFrom(loop.get(i).p,loop.get(i).norm);
+        showEdge(P(loop.get(i).p),P(loop.get(i+1).p));
+
+      }
+      */
+      for(ArrayList<LoopPt> loop: loops){
+      if(!showRibbon) {
+        //fill(blue);
+        for (int i=0; i<loop.size()-1;i++){
+
+          //stroke(blue);
+          //P(loop.get(i).p).show(1);
+          if(i%4>1) stroke(green);
+          else stroke(red);
+          
+          boolean first = true;
+          pt last = P(0,0,0);
+          for (float s=0; s<1; s+=.02){
+             float h1 =  2*pow(s,3) - 3*pow(s,2) + 1;                 // calculate basis function 1
+             float h2 = -2*pow(s,3) + 3*pow(s,2);                    // calculate basis function 2
+             float h3 =   pow(s,3) - 2*pow(s,2) + s;                // calculate basis function 3
+             float h4 =   pow(s,3) -  pow(s,2);      
+             
+             float scale = 1;
+             pt P0 = loop.get(i).p;
+             pt P1 = loop.get(i+1).p;
+             vec T0 = loop.get(i).vel;
+             vec T1 = loop.get(i+1).vel;
+             pt curr = S(S(A(S(h1,P0), S(h2,P1)),h3,S(scale,T0)),h4,S(scale,T1));
+             if (!first) {
+               showEdge(last, curr);
+             } else {
+               first = false;
+             }
+             last = curr;
+          //}
+          
+          
+        }
+        
+      }
+      }
+      }
+
+      
+      /*
+       if(!showRibbon) {
+           pt greenPt01 = P(C); //switch to A the other way
+           pt greenPt02 = P(CA1);
+           
+           pt redPt01 = P(B);  // switch to C the other way
+           pt redPt02 = P(CB1);
+           float scale = 10; //the tangents  //switch to .03 or something around there the other way
+          //stroke(blue); showLineFrom(C,S(.01,NC));
+           
+           
+           for (float s=0; s<1; s+=.02){
+             float h1 =  2*pow(s,3) - 3*pow(s,2) + 1;                 // calculate basis function 1
+             float h2 = -2*pow(s,3) + 3*pow(s,2);                    // calculate basis function 2
+             float h3 =   pow(s,3) - 2*pow(s,2) + s;                // calculate basis function 3
+             float h4 =   pow(s,3) -  pow(s,2);                    // calculate basis function 4
+             //pt greenPt1 = S(S(A(S(h1,P(C)), S(h2,P(CA1))),h3,S(scale,U(TC))),h4,S(scale,U(TCA)));           // P = h1*P0 + h2*P1 + h3*T0 + h4*T1
+             //pt greenPt2 = S(S(A(S(h1,P(CA1)), S(h2,P(A))),h3,S(scale,U(TCA))),h4,S(scale,U(TA)));
+             //pt redPt1 = S(S(A(S(h1,P(B)), S(h2,P(CB1))),h3,S(scale,U(TB))),h4,S(scale,U(TCB)));            
+             //pt redPt2 = S(S(A(S(h1,P(CB1)), S(h2,P(C))),h3,S(scale,U(TCB))),h4,S(scale,U(TC)));
+             
+             
+             if(!showRibbon){
+               stroke(green); showEdge(greenPt01,greenPt1); showEdge(greenPt02,greenPt2); 
+               stroke(red); showEdge(redPt01,redPt1); showEdge(redPt02, redPt2); 
+             } else {
+               float ACCA = a(NC,NCA);     //angles for ribbons
+               float ACAA = a(NCA,NA);
+               float ABCB = a(NB,NCB);
+               float ACBC = a(NCB,NC);
+
+               
+             }
+             
+             }
+          }
+      */
+
+      
+    // bend curves so that red edges goes below the blue edge and green goes above it    
+    // trace curves and assign a different color to each (computed when 'w' is pressed)
+    // show curves as flat ribbons (Quad strips), toggle when 'q' is pressed
+    // show curves as 4-sided tubes with minimal twist, toggle when 't' is pressed
+    // change wiring to have a single loop
+    // animate weaving invasion (for example: bottom up, along loop, from selected corner...)
+    // animate fly through the path of a loop
+    
+    strokeWeight(1);
+    }
+    
+    void calcLoop(){
+      int cStart = c;
+       ArrayList<LoopPt> loop = new ArrayList<LoopPt>();
     boolean flip = false;
     do { 
       
@@ -743,103 +853,7 @@ void EBstats(int lCs) {
       
       loop.add(new LoopPt(loop.get(0)));
       
-      
-      /*
-      fill(blue);
-      for (int i=0; i<loop.size()-1;i++){
-        stroke(blue);
-        P(loop.get(i).p).show(1);
-        if(i%4>1) stroke(green);
-        else stroke(red);
-       
-        //showLineFrom(loop.get(i).p,loop.get(i).norm);
-        showEdge(P(loop.get(i).p),P(loop.get(i+1).p));
-
-      }
-      */
-      if(!showRibbon) {
-        //fill(blue);
-        for (int i=0; i<loop.size()-1;i++){
-          //stroke(blue);
-          //P(loop.get(i).p).show(1);
-          if(i%4>1) stroke(green);
-          else stroke(red);
-          
-          boolean first = true;
-          pt last = P(0,0,0);
-          for (float s=0; s<1; s+=.02){
-             float h1 =  2*pow(s,3) - 3*pow(s,2) + 1;                 // calculate basis function 1
-             float h2 = -2*pow(s,3) + 3*pow(s,2);                    // calculate basis function 2
-             float h3 =   pow(s,3) - 2*pow(s,2) + s;                // calculate basis function 3
-             float h4 =   pow(s,3) -  pow(s,2);      
-             
-             float scale = 1;
-             pt P0 = loop.get(i).p;
-             pt P1 = loop.get(i+1).p;
-             vec T0 = loop.get(i).vel;
-             vec T1 = loop.get(i+1).vel;
-             pt curr = S(S(A(S(h1,P0), S(h2,P1)),h3,S(scale,T0)),h4,S(scale,T1));
-             if (!first) {
-               showEdge(last, curr);
-             } else {
-               first = false;
-             }
-             last = curr;
-          }
-          
-          
-        }
-        
-      }
-      
-      /*
-       if(!showRibbon) {
-           pt greenPt01 = P(C); //switch to A the other way
-           pt greenPt02 = P(CA1);
-           
-           pt redPt01 = P(B);  // switch to C the other way
-           pt redPt02 = P(CB1);
-           float scale = 10; //the tangents  //switch to .03 or something around there the other way
-          //stroke(blue); showLineFrom(C,S(.01,NC));
-           
-           
-           for (float s=0; s<1; s+=.02){
-             float h1 =  2*pow(s,3) - 3*pow(s,2) + 1;                 // calculate basis function 1
-             float h2 = -2*pow(s,3) + 3*pow(s,2);                    // calculate basis function 2
-             float h3 =   pow(s,3) - 2*pow(s,2) + s;                // calculate basis function 3
-             float h4 =   pow(s,3) -  pow(s,2);                    // calculate basis function 4
-             //pt greenPt1 = S(S(A(S(h1,P(C)), S(h2,P(CA1))),h3,S(scale,U(TC))),h4,S(scale,U(TCA)));           // P = h1*P0 + h2*P1 + h3*T0 + h4*T1
-             //pt greenPt2 = S(S(A(S(h1,P(CA1)), S(h2,P(A))),h3,S(scale,U(TCA))),h4,S(scale,U(TA)));
-             //pt redPt1 = S(S(A(S(h1,P(B)), S(h2,P(CB1))),h3,S(scale,U(TB))),h4,S(scale,U(TCB)));            
-             //pt redPt2 = S(S(A(S(h1,P(CB1)), S(h2,P(C))),h3,S(scale,U(TCB))),h4,S(scale,U(TC)));
-             
-             
-             if(!showRibbon){
-               stroke(green); showEdge(greenPt01,greenPt1); showEdge(greenPt02,greenPt2); 
-               stroke(red); showEdge(redPt01,redPt1); showEdge(redPt02, redPt2); 
-             } else {
-               float ACCA = a(NC,NCA);     //angles for ribbons
-               float ACAA = a(NCA,NA);
-               float ABCB = a(NB,NCB);
-               float ACBC = a(NCB,NC);
-
-               
-             }
-             
-             }
-          }
-      */
-
-      
-    // bend curves so that red edges goes below the blue edge and green goes above it    
-    // trace curves and assign a different color to each (computed when 'w' is pressed)
-    // show curves as flat ribbons (Quad strips), toggle when 'q' is pressed
-    // show curves as 4-sided tubes with minimal twist, toggle when 't' is pressed
-    // change wiring to have a single loop
-    // animate weaving invasion (for example: bottom up, along loop, from selected corner...)
-    // animate fly through the path of a loop
-    
-    strokeWeight(1);
+      loops.add(loop);
     }
     
     void showRibboning(int x)
