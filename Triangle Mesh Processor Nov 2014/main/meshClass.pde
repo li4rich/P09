@@ -937,7 +937,7 @@ void EBstats(int lCs) {
           if (flip) {loop.add(new LoopPt(C,TC,NC,c,2));loop.add(new LoopPt(CA1,TCA,V(CA,CA1),-1,3)); }
         else {loop.add(new LoopPt(C,TC1,NC,c,0)); loop.add(new LoopPt(CB1,TCB,V(CB,CB1),-1,1)); }
         }
-        
+        loop.setC(c);
         loop.setF(flipped);
         
         
@@ -968,7 +968,8 @@ void EBstats(int lCs) {
       int corns = 1000;
       LoopPt loopPt0 = loop0.get(0);
       LoopPt loopPt1= loop1.get(0);
-      int second = -1;
+      int corn1 = -1;
+      int corn2 = -1;
       int type = -1;
       for(LoopPt first: loop0.loop){
         if (c>=0){
@@ -981,7 +982,8 @@ void EBstats(int lCs) {
               if(corns>path1.size()){
                 corns = path1.size();
                 loopPt0 = first;
-                second = c1;
+                corn1 = first.c;
+                corn2 = c1;
                 type = 1;
                }
              }
@@ -990,7 +992,8 @@ void EBstats(int lCs) {
               if(corns>path1.size()){
                 corns = path1.size();
                 loopPt0 = first;
-                second = c2;
+                corn1 = first.c;
+                corn2 = c2;
                 type =2;
                }
              }
@@ -999,7 +1002,8 @@ void EBstats(int lCs) {
               if(corns>path1.size()){
                 corns = path1.size();
                 loopPt0 = first;
-                second = c3;
+                corn1 = first.c;
+                corn2 = c3;
                 type = 3;
                }
              }
@@ -1008,7 +1012,8 @@ void EBstats(int lCs) {
               if(corns>path1.size()){
                 corns = path1.size();
                 loopPt0 = first;
-                second = c4;
+                corn1 = first.c;
+                corn2 = c4;
                 type = 4;
                }
              }
@@ -1018,11 +1023,21 @@ void EBstats(int lCs) {
              c4=s(n(c4));        
           }
           
-          if(((first.c+second+corns)%2!=1 && loop0.flipped==loop1.flipped)||((first.c+second+corns)%2!=0 && loop0.flipped!=loop1.flipped)){
+          //****************this is wronnnngggggggggggggggggg************************
+          if(((first.c+corn2+corns)%2!=1 && loop0.flipped==loop1.flipped)||((first.c+corn2+corns)%2!=0 && loop0.flipped!=loop1.flipped)){
+          //****************this is wronnngggg****************************************
             c = loop1.get(0).c;
             boolean fl = loop1.flipped;
             loops.remove(M.loops.size()-1);
             calcLoop(!fl);
+          }
+          
+          Loop merged = new Loop();
+          
+          for(LoopPt first: loops.get(0)){
+            if (first.c!=corn1){
+            merged.add(first);
+            }
           }
         }
       }
