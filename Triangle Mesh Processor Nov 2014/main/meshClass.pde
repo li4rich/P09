@@ -741,23 +741,31 @@ void EBstats(int lCs) {
                if(!showRibbon)
                {
                   showEdge(last, curr);
-               }else 
+                }else 
                {
-
                  //if(i%2==0) fill(yellow); else fill(blue);
+                 if(i%2==0)
+                 {
+
+                 }
+                   float y = dot(V(M(loop.get(i).p, loop.get(i+1).p),curr), U(loop.get(i+1).norm));
+                   vec curNormal = S(y,U(loop.get(i+1).norm));
+                   vec O = U(C(V(loop.get(i).p,loop.get(i+1).p),loop.get(i+1).norm));
+                   float x = dot(V(M(loop.get(i).p,loop.get(i+1).p), curr), O);
+                   if(i+2<loop.size())
+                   {                  
+                     vec Oprime = U(C(V(loop.get(i+1).p,loop.get(i+2).p),loop.get(i+1).norm));  
+                     vec curTan = S(x, Oprime);
+                   }
+                 vec rib1 = U(C(loop.get(i).vel, curNormal));
+                 vec nRib1 = U(C(curNormal, loop.get(i).vel));
                  
-
-
-                 vec rib1 = U(C(loop.get(i).vel, loop.get(i).norm));
-                 vec nRib1 = U(C(loop.get(i).norm, loop.get(i).vel));
-                 
-                 vec rib2 = U(C(loop.get(i+1).vel,loop.get(i+1).norm));
-                 vec nRib2 = U(C(loop.get(i+1).norm, loop.get(i+1).vel));
-
+                 vec rib2 = U(C(loop.get(i).vel,curNormal));
+                 vec nRib2 = U(C(curNormal, loop.get(i).vel));
                  shapePointsUpper[shapePointsCount] = S(last,rib1); shapePointsLower[shapePointsCount] = S(last,nRib1); shapePointsCount++;
-                 shapePointsUpper[shapePointsCount] = S(curr,rib2); shapePointsLower[shapePointsCount] = S(curr, nRib2); shapePointsCount++;
+                 //shapePointsUpper[shapePointsCount] =S(curr, nRib2);  shapePointsLower[shapePointsCount] = S(curr,rib2); shapePointsCount++;
+                 //shapePointsUpper[shapePointsCount] = S(curr,rib2); shapePointsLower[shapePointsCount] = S(curr, nRib2); shapePointsCount++;
                  //vertex(S(last,rib1).x,S(last,rib1).y,S(last,rib1).z); vertex(S(last,nRib1).x,S(last,nRib1).y,S(last,nRib1).z); vertex(S(curr, nRib2).x,S(curr, nRib2).y,S(curr, nRib2).z); vertex(S(curr,rib2).x,S(curr,rib2).y,S(curr,rib2).z); 
-
                }
              } else {
                first = false;
@@ -769,8 +777,26 @@ void EBstats(int lCs) {
         }
            if(i%2 == 0) 
            {
+             
              if(!switchColor) switchColor = true; else switchColor = false;
-            
+                        /* beginShape();
+             //print("before vertex");
+             for(int spi = 0; spi<shapePointsUpper.length;spi++)
+             {
+               if(shapePointsUpper[spi]!=null) vertex(shapePointsUpper[spi].x,shapePointsUpper[spi].y,shapePointsUpper[spi].z);
+             }
+             for (int spi = shapePointsLower.length-1; spi>=0;spi--)
+             {
+              if(shapePointsLower[spi]!=null) vertex(shapePointsLower[spi].x,shapePointsLower[spi].y,shapePointsLower[spi].z); 
+             }
+             endShape();
+             //print("before refresh");
+             shapePointsUpper = new pt[(loop.size()-1)/2];
+             //print("after Upper declare");
+             shapePointsLower = new pt[(loop.size()-1)/2];
+             //print("after lower declare");
+             shapePointsCount=0;*/
+
            }else
            {
              //print("here");
@@ -778,14 +804,10 @@ void EBstats(int lCs) {
              //print("before vertex");
              for(int spi = 0; spi<shapePointsUpper.length;spi++)
              {
-               //print("before first vertex: "+ X);
-               //vertex(S(last,rib1).x,S(last,rib1).y,S(last,rib1).z);
                if(shapePointsUpper[spi]!=null) vertex(shapePointsUpper[spi].x,shapePointsUpper[spi].y,shapePointsUpper[spi].z);
              }
-             //print("before vertex lower");
              for (int spi = shapePointsLower.length-1; spi>=0;spi--)
              {
-//print("before first vertic");
               if(shapePointsLower[spi]!=null) vertex(shapePointsLower[spi].x,shapePointsLower[spi].y,shapePointsLower[spi].z); 
              }
              endShape();
