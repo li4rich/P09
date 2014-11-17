@@ -11,14 +11,14 @@ Mesh M = new Mesh();     // creates a default triangle mesh
 //========================== class MESH ===============================
 class Mesh {
   
-  ArrayList<ArrayList<LoopPt>> loops;
+  ArrayList<Loop> loops;
 
 //  ==================================== INIT, CREATE, COPY ====================================
  Mesh() {}
  void declare() {
    for (int i=0; i<maxnv; i++) {G[i]=new pt(0,0,0); Nv[i]=new vec(0,0,0);};   // init vertices and normals
    for (int i=0; i<maxnt; i++) {Nt[i]=new vec(0,0,0);  };       // init triangle normals and skeleton lab els
-   loops = new ArrayList<ArrayList<LoopPt>>();
+   loops = new ArrayList<Loop>();
    }
  void makeGrid (int w) { // make a 2D grid of vertices
   for (int i=0; i<w; i++) {for (int j=0; j<w; j++) { G[w*i+j].setTo(height*.8*j/(w-1)+height/10,height*.8*i/(w-1)+height/10,0);}}    
@@ -709,7 +709,7 @@ void EBstats(int lCs) {
 
       }
       */
-      for(ArrayList<LoopPt> loop: loops){
+      for(Loop loop: loops){
       //if(!showRibbon) {
         //fill(blue);
         boolean switchColor = false;          
@@ -719,13 +719,20 @@ void EBstats(int lCs) {
         for (int i=0; i<loop.size()-1;i++){
 
           //stroke(blue);
-          //P(loop.get(i).p).show(1);
+          //P(loop.get(i).p).show(0);
+          if(!loop.flipped){
           if(i%4>1) stroke(green);
           else stroke(red);
+          } else {
+            if(i%4<2) stroke(green);
+          else stroke(red);
+          }
           
           boolean first = true;
           pt last = P(0,0,0);
-          for (float s=0; s<1; s+=.05){
+          float parts = 20;
+          for (float si=0; si<=parts; si++){
+             float s = si/parts;
              float h1 =  2*pow(s,3) - 3*pow(s,2) + 1;                 // calculate basis function 1
              float h2 = -2*pow(s,3) + 3*pow(s,2);                    // calculate basis function 2
              float h3 =   pow(s,3) - 2*pow(s,2) + s;                // calculate basis function 3
@@ -860,16 +867,17 @@ void EBstats(int lCs) {
     strokeWeight(1);
     }
     
-    void calcLoop(){
+    void calcLoop(boolean fliped){
       int cStart = c;
-       ArrayList<LoopPt> loop = new ArrayList<LoopPt>();
-    boolean flip = false;
+       Loop loop = new Loop(nc);
+       boolean flip = false;
+       int count = 0;
     do { 
       
         int a=s(n(c)), b = n(s(c));
         pt A=ccg(s(n(c))), C = ccg(c), B = ccg(n(s(c))), CA = midPt(G[v(s(n(c)))],G[v(c)]), CB = midPt(G[v(n(s(c)))],G[v(c)]); //<>//
-        vec NAv = U(Nv[v(s(n(c)))]);  //normals of the verticies associated with A,B,C
-        vec NBv = U(Nv[v(n(s(c)))]);
+        vec NAv = U(Nv[v(a)]);  //normals of the verticies associated with A,B,C
+        vec NBv = U(Nv[v(b)]);
         vec NCv = U(Nv[v(c)]);
         vec NCA = NCv;
         vec NCB = NCv;
@@ -884,12 +892,16 @@ void EBstats(int lCs) {
         vec NB = triNorm(G[v(b)],G[v(n(b))],G[v(n(n(b)))]); //gonna be used for hermite i think
         vec NC = triNorm(G[v(c)],G[v(n(c))],G[v(n(n(c)))]);
         
+        pt CA1;
+        pt CB1;
         
-  
-          pt CA1 = S(CA,2,NCA); 
-
-          pt CB1 = S(CB,-2,NCB); 
-         
+        if (!fliped){
+          CA1 = S(CA,2,NCA); 
+          CB1 = S(CB,-2,NCB); 
+        } else {
+          CA1 = S(CA,-2,NCA); 
+          CB1 = S(CB,2,NCB);
+        }
 
         vec TC = S(.5,V(CB,CA));
         vec TC1 = S(.5,V(CA,CB));
@@ -897,8 +909,10 @@ void EBstats(int lCs) {
         vec TCB = S(-.5,V(B,C));
         
         
-        if (flip) {loop.add(new LoopPt(C,TC,NC,c));loop.add(new LoopPt(CA1,TCA,V(CA,CA1),c)); }
-        else {loop.add(new LoopPt(C,TC1,NC,c)); loop.add(new LoopPt(CB1,TCB,V(CB,CB1),c)); }
+        if (flip) {loop.add(new LoopPt(C,TC,NC,c,count++));loop.add(new LoopPt(CA1,TCA,V(CA,CA1),-1,-1)); }
+        else {loop.add(new LoopPt(C,TC1,NC,c,count++)); loop.add(new LoopPt(CB1,TCB,V(CB,CB1),-1,-1)); }
+        loop.setC(c);
+        loop.setF(fliped);
         
         
         
@@ -917,30 +931,78 @@ void EBstats(int lCs) {
       loops.add(loop);
     }
     
+
+    
     
     void mergeLoops(){
-      ArrayList<LoopPt> loop0 = loops.get(0);
-      ArrayList<LoopPt> loop1 = loops.get(1);
-      int tris = 1000;
+      if (loops.size()!=2){
+        print("need exsactly 2 loops");
+        return;
+      }
+      Loop loop0 = loops.get(0);
+      Loop loop1 = loops.get(1);
+      int corns = 1000;
       LoopPt loopPt0 = loop0.get(0);
-      LoopPt loopPt1= loop1.get(0);
-      for(LoopPt first: loop0){
-        for(LoopPt second: loop1){
-          prevc = first.c;
-          c = second.c;
-          computePath();
-          int count = 0;
-          for(int t=0; t<nt; t++) {if(Mt[t]!=0) count++;}
-          if(count<tris){
-            tris = count;
-            loopPt0 = first;
-            loopPt1 = second;
+      int second = -1;
+      int type = -1;
+      for(LoopPt first: loop0.loop){
+        if (c>=0){
+          boolean searching = true;
+          ArrayList<Integer> path1 = new ArrayList<Integer>(), path2 = new ArrayList<Integer>(), path3 = new ArrayList<Integer>(), path4 = new ArrayList<Integer>();
+          int c1 = n(first.c), c2 = n(first.c), c3=p(first.c), c4=p(first.c);
+          while (searching){
+            if(loop1.getC(c1)){
+              searching=false;
+              if(corns>path1.size()){
+                corns = path1.size();
+                loopPt0 = first;
+                second = c1;
+                type = 1;
+               }
+             }
+             if(loop1.getC(c2)){
+              searching=false;
+              if(corns>path1.size()){
+                corns = path1.size();
+                loopPt0 = first;
+                second = c2;
+                type =2;
+               }
+             }
+             if(loop1.getC(c3)){
+              searching=false;
+              if(corns>path1.size()){
+                corns = path1.size();
+                loopPt0 = first;
+                second = c3;
+                type = 3;
+               }
+             }
+             if(loop1.getC(c4)){
+              searching=false;
+              if(corns>path1.size()){
+                corns = path1.size();
+                loopPt0 = first;
+                second = c4;
+                type = 4;
+               }
+             }
+             c1=n(s(c1));
+             c2=s(n(c2));
+             c3=n(s(c3));
+             c4=s(n(c4));        
           }
+          
+          if(((first.c+second+corns)%2!=1 && loop0.flipped==loop1.flipped)||((first.c+second+corns)%2!=0 && loop0.flipped!=loop1.flipped)){
+            c = loop1.get(0).c;
+            boolean fl = loop1.flipped;
+            loops.remove(M.loops.size()-1);
+            calcLoop(!fl);
+          }
+      
+      
         }
       }
-      
-      
-      
     }
     
     void showRibboning(int x)
