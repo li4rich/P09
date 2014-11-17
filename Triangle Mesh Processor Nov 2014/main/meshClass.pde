@@ -4,7 +4,7 @@ int showSkeletOnly=1;
 int rings=1;                               // number of rings for colorcoding
 int r=10;                                // radius of spheres for displaying vertices
 float w=10;  // width of ribbon
-boolean showNormals=false, showVertices=false, showEdges=false, showTriangles=true,  showSelectedTriangle=true, showLabels=false, showPath=false, showRibbon=false, showDefaultRibbon = false;  // flags for rendering
+boolean showNormals=false, showVertices=false, showEdges=false, showTriangles=true,  showSelectedTriangle=true, showLabels=false, showPath=false, showRibbon=false, showDefaultRibbon = false, showTube = false;  // flags for rendering
 boolean showSkeleton=true, showSelectedLake=true, showOtherLakes=true, showDistance=false, showEB=false, showEBrec=false, showClusters=true, showLace=false;
 Mesh M = new Mesh();     // creates a default triangle mesh
 
@@ -826,7 +826,7 @@ void EBstats(int lCs) {
                {
                  if(shapePointsUpper[spi] !=null)
                  {
-                  vertex(shapePointsUpper[spi].
+                  //vertex(shapePointsUpper[spi].
                  }
                }
              }
@@ -1056,14 +1056,14 @@ void EBstats(int lCs) {
             loops.remove(M.loops.size()-1);
             calcLoop(!fl);
           }
-          
+          /*
           Loop merged = new Loop();
           
           for(LoopPt first: loops.get(0)){
             if (first.c!=corn1){
             merged.add(first);
             }
-          }
+          }*/
         }
       }
       
