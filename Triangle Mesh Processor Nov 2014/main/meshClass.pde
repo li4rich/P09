@@ -826,7 +826,7 @@ void EBstats(int lCs) {
                {
                  if(shapePointsUpper[spi] !=null)
                  {
-                  //vertex(shapePointsUpper[spi].
+                  vertex(shapePointsUpper[spi].
                  }
                }
              }
