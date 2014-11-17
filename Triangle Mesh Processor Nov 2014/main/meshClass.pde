@@ -757,8 +757,8 @@ void EBstats(int lCs) {
                      vec Oprime = U(C(V(loop.get(i+1).p,loop.get(i+2).p),loop.get(i+1).norm));  
                      vec curTan = S(x, Oprime);
                    }
-                 vec rib1 = U(C(loop.get(i).vel, curNormal));
-                 vec nRib1 = U(C(curNormal, loop.get(i).vel));
+                 vec rib1 = U(C(loop.get(i+1).vel, curNormal));
+                 vec nRib1 = U(C(curNormal, loop.get(i+1).vel));
                  
                  vec rib2 = U(C(loop.get(i).vel,curNormal));
                  vec nRib2 = U(C(curNormal, loop.get(i).vel));
