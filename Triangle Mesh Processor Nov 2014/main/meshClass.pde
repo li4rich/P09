@@ -721,7 +721,7 @@ void EBstats(int lCs) {
           
           boolean first = true;
           pt last = P(0,0,0);
-          for (float s=0; s<1; s+=.02){
+          for (float s=0; s<1; s+=.05){
              float h1 =  2*pow(s,3) - 3*pow(s,2) + 1;                 // calculate basis function 1
              float h2 = -2*pow(s,3) + 3*pow(s,2);                    // calculate basis function 2
              float h3 =   pow(s,3) - 2*pow(s,2) + s;                // calculate basis function 3
@@ -739,13 +739,19 @@ void EBstats(int lCs) {
                   showEdge(last, curr);
                }else 
                {
-                 if(i%2==0) fill(yellow); else fill(blue);
+                 if(i%2==0) {
+                // stroke(yellow);
+                 fill(yellow);
+               } else {
+             //  stroke(blue);
+                fill(blue);
+              }
                  vec rib1 = U(C(loop.get(i).vel, loop.get(i).norm));
                  vec nRib1 = U(C(loop.get(i).norm, loop.get(i).vel));
                  
                  vec rib2 = U(C(loop.get(i+1).vel,loop.get(i+1).norm));
                  vec nRib2 = U(C(loop.get(i+1).norm, loop.get(i+1).vel));
-                 beginShape(); vertex(S(last,rib1).x,S(last,rib1).y,S(last,rib1).z); vertex(S(last,nRib1).x,S(last,nRib1).y,S(last,nRib1).z); vertex(S(curr, nRib2).x,S(curr, nRib2).y,S(curr, nRib2).z); vertex(S(curr,rib2).x,S(curr,rib2).y,S(curr,rib2).z); endShape(); 
+                 beginShape(); vert(S(last,rib1)); vert(S(last,nRib1)); vert(S(curr, nRib2)); vert(S(curr,rib2));  endShape(); 
                }
              } else {
                first = false;
@@ -848,8 +854,8 @@ void EBstats(int lCs) {
         vec TCB = S(-.5,V(B,C));
         
         
-        if (flip) {loop.add(new LoopPt(C,TC,NC));loop.add(new LoopPt(CA1,TCA,V(CA,CA1))); }
-        else {loop.add(new LoopPt(C,TC1,NC)); loop.add(new LoopPt(CB1,TCB,V(CB,CB1))); }
+        if (flip) {loop.add(new LoopPt(C,TC,NC,c));loop.add(new LoopPt(CA1,TCA,V(CA,CA1),c)); }
+        else {loop.add(new LoopPt(C,TC1,NC,c)); loop.add(new LoopPt(CB1,TCB,V(CB,CB1),c)); }
         
         
         
@@ -866,6 +872,32 @@ void EBstats(int lCs) {
       loop.add(new LoopPt(loop.get(0)));
       
       loops.add(loop);
+    }
+    
+    
+    void mergeLoops(){
+      ArrayList<LoopPt> loop0 = loops.get(0);
+      ArrayList<LoopPt> loop1 = loops.get(1);
+      int tris = 1000;
+      LoopPt loopPt0 = loop0.get(0);
+      LoopPt loopPt1= loop1.get(0);
+      for(LoopPt first: loop0){
+        for(LoopPt second: loop1){
+          prevc = first.c;
+          c = second.c;
+          calculatePath();
+          int count = 0;
+          for(int t=0; t<nt; t++) {if(Mt[t]!=0) count++;}
+          if(count<tris){
+            tris = count;
+            corner0 = first;
+            corner1 = second;
+          }
+        }
+      }
+          
+      
+      
     }
     
     void showRibboning(int x)

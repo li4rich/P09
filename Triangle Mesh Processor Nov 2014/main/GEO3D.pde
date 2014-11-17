@@ -44,7 +44,8 @@ void show(pt P, pt Q) {line(P.x,P.y,P.z,Q.x,Q.y,Q.z); };                        
 void showEdge(pt P, pt Q) {line(P.x,P.y,P.z,Q.x,Q.y,Q.z); };                                     // draws edge (P,Q)
 void showLineFrom (pt P, vec V) {line(P.x,P.y,P.z,P.x+V.x,P.y+V.y,P.z+V.z); }; 
 void showLineFrom (pt P, vec V, float d) {line(P.x,P.y,P.z,P.x+d*V.x,P.y+d*V.y,P.z+d*V.z); }; 
-void v(pt P) {vertex(P.x,P.y,P.z);};                                                        // next vertex when drawing shapes between beginShape(); and endShape();
+void v(pt P) {vertex(P.x,P.y,P.z);}; 
+void vert(pt P) {vertex(P.x,P.y,P.z);};  // next vertex when drawing shapes between beginShape(); and endShape();
 
 // ===== products
 float d(vec U, vec V) {return U.x*V.x+U.y*V.y+U.z*V.z; };                                          //U*V dot product
