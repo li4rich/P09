@@ -41,4 +41,13 @@ in meshClass
 ccg(c) returns point at corner
 search show() 
 search showLace
+
+nssn n ns p nssn
+snns n ns p snns
+nssn p ns n nssn
+snns p ns n snns
+nssn n nssn n snns
+nssn p nssn n snns
+nssn n sn p nssn
+
 */  

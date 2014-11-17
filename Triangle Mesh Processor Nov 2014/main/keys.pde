@@ -42,7 +42,7 @@ void keys() {
   if (key=='n') {M.next();};  
   if (key=='o') {M.opposite(); if (jumps) C.jump(M); };  
   if (key=='p') {M.previous();};  
-  if (key=='q') {M.calcLoop();};   
+  if (key=='q') {M.calcLoop(false);};   
   if (key=='r') {M.right(); if (jumps) C.jump(M);}; 
   if (key=='s') {M.swing();};   // select current corner
   if (key=='t') {};  
@@ -69,7 +69,7 @@ void keys() {
   if (key=='N') {M.showNormals=!M.showNormals; if(M.showNormals) println("showing normals"); else println("not showing normals"); };  
   if (key=='O') { }; 
   if (key=='P') {M.computePath(); M.showDistance=true; println("showing path"); println("not showing path"); };
-  if (key=='Q') { }; 
+  if (key=='Q') {M.calcLoop(true);}; 
   if (key=='R') {M.splitEdges(); M.bulge(); M.splitTriangles(); M.init(); print("Refined the mesh");};   // refine mesh
   if (key=='S') {M.computeLaplaceVectors(); M.tuck(0.6); M.computeLaplaceVectors(); M.tuck(-0.6); println("Smoothed the mesh");};  
   if (key=='T') {M.showTriangles=!M.showTriangles; if(M.showTriangles) println("showing triangles"); else println("not showing triangles"); }; 
