@@ -2,6 +2,7 @@ class Loop {
   ArrayList<LoopPt> loop;
   boolean[] hasCorner;
   boolean flipped;
+  int nc;
   
   Loop(int nc){
     loop = new ArrayList<LoopPt>();
@@ -9,6 +10,7 @@ class Loop {
     for(int i=0;i<nc;i++){
       hasCorner[i] = false;
     }
+    this.nc=nc;
   }
   
   void setLoop(ArrayList<LoopPt> loop){
@@ -17,6 +19,13 @@ class Loop {
   
   LoopPt get(int i){
     return loop.get(i);
+  }
+  
+  LoopPt getWithC(int c){
+    for(LoopPt p:loop){
+      if (p.c==c) return p;
+    }
+    return null;
   }
   
   void add(LoopPt Loopt){

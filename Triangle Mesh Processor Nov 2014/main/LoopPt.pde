@@ -22,4 +22,8 @@ class LoopPt{
     this.c = lp.c;
     this.type = lp.type;
   }
+  
+  void setVel(vec v){
+    vel=v;
+  }
 }

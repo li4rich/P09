@@ -4,7 +4,7 @@ int showSkeletOnly=1;
 int rings=1;                               // number of rings for colorcoding
 int r=10;                                // radius of spheres for displaying vertices
 float w=10;  // width of ribbon
-boolean showNormals=false, showVertices=false, showEdges=false, showTriangles=true,  showSelectedTriangle=true, showLabels=false, showPath=false, showRibbon=false, showDefaultRibbon = false;  // flags for rendering
+boolean showNormals=false, showVertices=false, showEdges=false, showTriangles=true,  showSelectedTriangle=true, showLabels=false, showPath=false, showRibbon=false, showDefaultRibbon = false, showTube = false;  // flags for rendering
 boolean showSkeleton=true, showSelectedLake=true, showOtherLakes=true, showDistance=false, showEB=false, showEBrec=false, showClusters=true, showLace=false;
 Mesh M = new Mesh();     // creates a default triangle mesh
 
@@ -718,8 +718,8 @@ void EBstats(int lCs) {
         int shapePointsCount = 0;
         for (int i=0; i<loop.size()-1;i++){
 
-          //stroke(blue);
-          //P(loop.get(i).p).show(1);
+          
+          if(loop.get(i).type==0) {stroke(blue); showLineFrom(loop.get(i).p,S(3,U(loop.get(i).vel))); P(loop.get(i).p).show(1);}
           if(!loop.flipped){
            if(i%4>1) stroke(green);
            else stroke(red);
@@ -826,7 +826,7 @@ void EBstats(int lCs) {
                {
                  if(shapePointsUpper[spi] !=null)
                  {
-                  vertex(shapePointsUpper[spi].
+                  //vertex(shapePointsUpper[spi].
                  }
                }
              }
@@ -964,13 +964,6 @@ void EBstats(int lCs) {
         }
         loop.setC(c);
         loop.setF(flipped);
-        
-        
-        
-        
-        
-      
-      
 
         if(flip) {c = s(n(c)); flip=false;}
         else { c= n(s(c)); flip = true;}
@@ -1001,6 +994,7 @@ void EBstats(int lCs) {
           boolean searching = true;
           ArrayList<Integer> path1 = new ArrayList<Integer>(), path2 = new ArrayList<Integer>(), path3 = new ArrayList<Integer>(), path4 = new ArrayList<Integer>();
           int c1 = n(first.c), c2 = n(first.c), c3=p(first.c), c4=p(first.c);
+          boolean f = true;
           while (searching){
             if(loop1.getC(c1)){
               searching=false;
@@ -1042,26 +1036,69 @@ void EBstats(int lCs) {
                 type = 4;
                }
              }
-             c1=n(s(c1));
-             c2=s(n(c2));
-             c3=n(s(c3));
-             c4=s(n(c4));        
+             if(f){
+               c1=n(s(c1));
+               c2=s(n(c2));
+               c3=n(s(c3));
+               c4=s(n(c4));
+             } else {
+               c1=s(n(c1));
+               c2=n(s(c2));
+               c3=s(n(c3));
+               c4=n(s(c4));
           }
           
-          //****************this is wronnnngggggggggggggggggg************************
-          if(((first.c+corn2+corns)%2!=1 && loop0.flipped==loop1.flipped)||((first.c+corn2+corns)%2!=0 && loop0.flipped!=loop1.flipped)){
-          //****************this is wronnngggg****************************************
+          int type1 = loop0.getWithC(corn1).type, type2 = loop1.getWithC(corn2).type; 
+          if(((type1+type2)%4==0 && corns%2==0 && loop0.flipped==loop1.flipped)||((type1+type2)%4!=0 && corns%2==1 && loop0.flipped!=loop1.flipped)){
             c = loop1.get(0).c;
             boolean fl = loop1.flipped;
             loops.remove(M.loops.size()-1);
             calcLoop(!fl);
           }
           
-          Loop merged = new Loop();
+          Loop merged = new Loop(loop0.nc+loop1.nc-4+corns*2);
           
-          for(LoopPt first: loops.get(0)){
+          for(int i=0; i< loops.get(0).size();i++){
+            LoopPt p1 = loops.get(0).get(i);
             if (first.c!=corn1){
             merged.add(first);
+            } else {
+              boolean up = (loop0.get(i).type==0) == !loops.get(0).flipped;
+              boolean ns;
+              int nextc;
+              pt mid = P(0,0,0);
+              vec normm = V(0,0,0);
+              switch(type){
+               case 1:
+                  nextc = n(s(n(first.c)));
+                  ns = true;
+                  mid = midPt(G[v(n(c))],G[v(c)]); 
+                  normm = U(M(Nv[v(c)],Nv[v(n(c))]));
+                  break; 
+               case 2:
+                  nextc = s(n(n(first.c)));
+                  ns = false;
+                  mid = midPt(G[v(n(c))],G[v(p(c))]); 
+                  normm = U(M(Nv[v(p(c))],Nv[v(n(c))]));
+                  break;
+               case 3:
+                  nextc = n(s(p(first.c)));
+                  ns = true;
+                  mid = midPt(G[v(n(c))],G[v(p(c))]); 
+                  normm = U(M(Nv[v(p(c))],Nv[v(n(c))]));
+                  break;
+               case 4:
+                  nextc = s(n(p(first.c)));
+                  ns = false;
+                  mid = midPt(G[v(p(c))],G[v(c)]); 
+                  normm = U(M(Nv[v(c)],Nv[v(p(c))]));
+                  break;
+              }
+              int scale = 2;
+              if (!up) scale*=-1;
+              pt nextPt = S(mid,scale,normm);
+              LoopPt prev = loop0.get((loop0.size()+i)%loop0.size());
+              vec tang = S(.5,V(prev.p, nextPt));
             }
           }
         }
@@ -1069,6 +1106,7 @@ void EBstats(int lCs) {
       
       
       
+    }
     }
     
     void showRibboning(int x)
