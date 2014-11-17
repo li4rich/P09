@@ -11,14 +11,14 @@ Mesh M = new Mesh();     // creates a default triangle mesh
 //========================== class MESH ===============================
 class Mesh {
   
-  ArrayList<Loop> loops;
+  ArrayList<ArrayList<LoopPt>> loops;
 
 //  ==================================== INIT, CREATE, COPY ====================================
  Mesh() {}
  void declare() {
    for (int i=0; i<maxnv; i++) {G[i]=new pt(0,0,0); Nv[i]=new vec(0,0,0);};   // init vertices and normals
    for (int i=0; i<maxnt; i++) {Nt[i]=new vec(0,0,0);  };       // init triangle normals and skeleton lab els
-   loops = new ArrayList<Loop>();
+   loops = new ArrayList<ArrayList<LoopPt>>();
    }
  void makeGrid (int w) { // make a 2D grid of vertices
   for (int i=0; i<w; i++) {for (int j=0; j<w; j++) { G[w*i+j].setTo(height*.8*j/(w-1)+height/10,height*.8*i/(w-1)+height/10,0);}}    
@@ -709,7 +709,7 @@ void EBstats(int lCs) {
 
       }
       */
-      for(Loop loop: loops){
+      for(ArrayList<LoopPt> loop: loops){
       //if(!showRibbon) {
         //fill(blue);
         boolean switchColor = false;          
@@ -719,20 +719,13 @@ void EBstats(int lCs) {
         for (int i=0; i<loop.size()-1;i++){
 
           //stroke(blue);
-          //P(loop.get(i).p).show(0);
-          if(!loop.flipped){
+          //P(loop.get(i).p).show(1);
           if(i%4>1) stroke(green);
           else stroke(red);
-          } else {
-            if(i%4<2) stroke(green);
-          else stroke(red);
-          }
           
           boolean first = true;
           pt last = P(0,0,0);
-          float parts = 20;
-          for (float si=0; si<=parts; si++){
-             float s = si/parts;
+          for (float s=0; s<1; s+=.05){
              float h1 =  2*pow(s,3) - 3*pow(s,2) + 1;                 // calculate basis function 1
              float h2 = -2*pow(s,3) + 3*pow(s,2);                    // calculate basis function 2
              float h3 =   pow(s,3) - 2*pow(s,2) + s;                // calculate basis function 3
@@ -748,23 +741,31 @@ void EBstats(int lCs) {
                if(!showRibbon)
                {
                   showEdge(last, curr);
-               }else 
+                }else 
                {
-
                  //if(i%2==0) fill(yellow); else fill(blue);
+                 if(i%2==0)
+                 {
+
+                 }
+                   float y = dot(V(M(loop.get(i).p, loop.get(i+1).p),curr), U(loop.get(i+1).norm));
+                   vec curNormal = S(y,U(loop.get(i+1).norm));
+                   vec O = U(C(V(loop.get(i).p,loop.get(i+1).p),loop.get(i+1).norm));
+                   float x = dot(V(M(loop.get(i).p,loop.get(i+1).p), curr), O);
+                   if(i+2<loop.size())
+                   {                  
+                     vec Oprime = U(C(V(loop.get(i+1).p,loop.get(i+2).p),loop.get(i+1).norm));  
+                     vec curTan = S(x, Oprime);
+                   }
+                 vec rib1 = U(C(loop.get(i+1).vel, curNormal));
+                 vec nRib1 = U(C(curNormal, loop.get(i+1).vel));
                  
-
-
-                 vec rib1 = U(C(loop.get(i).vel, loop.get(i).norm));
-                 vec nRib1 = U(C(loop.get(i).norm, loop.get(i).vel));
-                 
-                 vec rib2 = U(C(loop.get(i+1).vel,loop.get(i+1).norm));
-                 vec nRib2 = U(C(loop.get(i+1).norm, loop.get(i+1).vel));
-
+                 vec rib2 = U(C(loop.get(i).vel,curNormal));
+                 vec nRib2 = U(C(curNormal, loop.get(i).vel));
                  shapePointsUpper[shapePointsCount] = S(last,rib1); shapePointsLower[shapePointsCount] = S(last,nRib1); shapePointsCount++;
-                 shapePointsUpper[shapePointsCount] = S(curr,rib2); shapePointsLower[shapePointsCount] = S(curr, nRib2); shapePointsCount++;
+                 //shapePointsUpper[shapePointsCount] =S(curr, nRib2);  shapePointsLower[shapePointsCount] = S(curr,rib2); shapePointsCount++;
+                 //shapePointsUpper[shapePointsCount] = S(curr,rib2); shapePointsLower[shapePointsCount] = S(curr, nRib2); shapePointsCount++;
                  //vertex(S(last,rib1).x,S(last,rib1).y,S(last,rib1).z); vertex(S(last,nRib1).x,S(last,nRib1).y,S(last,nRib1).z); vertex(S(curr, nRib2).x,S(curr, nRib2).y,S(curr, nRib2).z); vertex(S(curr,rib2).x,S(curr,rib2).y,S(curr,rib2).z); 
-
                }
              } else {
                first = false;
@@ -776,8 +777,26 @@ void EBstats(int lCs) {
         }
            if(i%2 == 0) 
            {
+             
              if(!switchColor) switchColor = true; else switchColor = false;
-            
+                        /* beginShape();
+             //print("before vertex");
+             for(int spi = 0; spi<shapePointsUpper.length;spi++)
+             {
+               if(shapePointsUpper[spi]!=null) vertex(shapePointsUpper[spi].x,shapePointsUpper[spi].y,shapePointsUpper[spi].z);
+             }
+             for (int spi = shapePointsLower.length-1; spi>=0;spi--)
+             {
+              if(shapePointsLower[spi]!=null) vertex(shapePointsLower[spi].x,shapePointsLower[spi].y,shapePointsLower[spi].z); 
+             }
+             endShape();
+             //print("before refresh");
+             shapePointsUpper = new pt[(loop.size()-1)/2];
+             //print("after Upper declare");
+             shapePointsLower = new pt[(loop.size()-1)/2];
+             //print("after lower declare");
+             shapePointsCount=0;*/
+
            }else
            {
              //print("here");
@@ -785,14 +804,10 @@ void EBstats(int lCs) {
              //print("before vertex");
              for(int spi = 0; spi<shapePointsUpper.length;spi++)
              {
-               //print("before first vertex: "+ X);
-               //vertex(S(last,rib1).x,S(last,rib1).y,S(last,rib1).z);
                if(shapePointsUpper[spi]!=null) vertex(shapePointsUpper[spi].x,shapePointsUpper[spi].y,shapePointsUpper[spi].z);
              }
-             //print("before vertex lower");
              for (int spi = shapePointsLower.length-1; spi>=0;spi--)
              {
-//print("before first vertic");
               if(shapePointsLower[spi]!=null) vertex(shapePointsLower[spi].x,shapePointsLower[spi].y,shapePointsLower[spi].z); 
              }
              endShape();
@@ -867,17 +882,16 @@ void EBstats(int lCs) {
     strokeWeight(1);
     }
     
-    void calcLoop(boolean fliped){
+    void calcLoop(){
       int cStart = c;
-       Loop loop = new Loop(nc);
-       boolean flip = false;
-       int count = 0;
+       ArrayList<LoopPt> loop = new ArrayList<LoopPt>();
+    boolean flip = false;
     do { 
       
         int a=s(n(c)), b = n(s(c));
         pt A=ccg(s(n(c))), C = ccg(c), B = ccg(n(s(c))), CA = midPt(G[v(s(n(c)))],G[v(c)]), CB = midPt(G[v(n(s(c)))],G[v(c)]); //<>//
-        vec NAv = U(Nv[v(a)]);  //normals of the verticies associated with A,B,C
-        vec NBv = U(Nv[v(b)]);
+        vec NAv = U(Nv[v(s(n(c)))]);  //normals of the verticies associated with A,B,C
+        vec NBv = U(Nv[v(n(s(c)))]);
         vec NCv = U(Nv[v(c)]);
         vec NCA = NCv;
         vec NCB = NCv;
@@ -892,16 +906,12 @@ void EBstats(int lCs) {
         vec NB = triNorm(G[v(b)],G[v(n(b))],G[v(n(n(b)))]); //gonna be used for hermite i think
         vec NC = triNorm(G[v(c)],G[v(n(c))],G[v(n(n(c)))]);
         
-        pt CA1;
-        pt CB1;
         
-        if (!fliped){
-          CA1 = S(CA,2,NCA); 
-          CB1 = S(CB,-2,NCB); 
-        } else {
-          CA1 = S(CA,-2,NCA); 
-          CB1 = S(CB,2,NCB);
-        }
+  
+          pt CA1 = S(CA,2,NCA); 
+
+          pt CB1 = S(CB,-2,NCB); 
+         
 
         vec TC = S(.5,V(CB,CA));
         vec TC1 = S(.5,V(CA,CB));
@@ -909,10 +919,8 @@ void EBstats(int lCs) {
         vec TCB = S(-.5,V(B,C));
         
         
-        if (flip) {loop.add(new LoopPt(C,TC,NC,c,count++));loop.add(new LoopPt(CA1,TCA,V(CA,CA1),-1,-1)); }
-        else {loop.add(new LoopPt(C,TC1,NC,c,count++)); loop.add(new LoopPt(CB1,TCB,V(CB,CB1),-1,-1)); }
-        loop.setC(c);
-        loop.setF(fliped);
+        if (flip) {loop.add(new LoopPt(C,TC,NC,c));loop.add(new LoopPt(CA1,TCA,V(CA,CA1),c)); }
+        else {loop.add(new LoopPt(C,TC1,NC,c)); loop.add(new LoopPt(CB1,TCB,V(CB,CB1),c)); }
         
         
         
@@ -931,78 +939,30 @@ void EBstats(int lCs) {
       loops.add(loop);
     }
     
-
-    
     
     void mergeLoops(){
-      if (loops.size()!=2){
-        print("need exsactly 2 loops");
-        return;
-      }
-      Loop loop0 = loops.get(0);
-      Loop loop1 = loops.get(1);
-      int corns = 1000;
+      ArrayList<LoopPt> loop0 = loops.get(0);
+      ArrayList<LoopPt> loop1 = loops.get(1);
+      int tris = 1000;
       LoopPt loopPt0 = loop0.get(0);
-      int second = -1;
-      int type = -1;
-      for(LoopPt first: loop0.loop){
-        if (c>=0){
-          boolean searching = true;
-          ArrayList<Integer> path1 = new ArrayList<Integer>(), path2 = new ArrayList<Integer>(), path3 = new ArrayList<Integer>(), path4 = new ArrayList<Integer>();
-          int c1 = n(first.c), c2 = n(first.c), c3=p(first.c), c4=p(first.c);
-          while (searching){
-            if(loop1.getC(c1)){
-              searching=false;
-              if(corns>path1.size()){
-                corns = path1.size();
-                loopPt0 = first;
-                second = c1;
-                type = 1;
-               }
-             }
-             if(loop1.getC(c2)){
-              searching=false;
-              if(corns>path1.size()){
-                corns = path1.size();
-                loopPt0 = first;
-                second = c2;
-                type =2;
-               }
-             }
-             if(loop1.getC(c3)){
-              searching=false;
-              if(corns>path1.size()){
-                corns = path1.size();
-                loopPt0 = first;
-                second = c3;
-                type = 3;
-               }
-             }
-             if(loop1.getC(c4)){
-              searching=false;
-              if(corns>path1.size()){
-                corns = path1.size();
-                loopPt0 = first;
-                second = c4;
-                type = 4;
-               }
-             }
-             c1=n(s(c1));
-             c2=s(n(c2));
-             c3=n(s(c3));
-             c4=s(n(c4));        
+      LoopPt loopPt1= loop1.get(0);
+      for(LoopPt first: loop0){
+        for(LoopPt second: loop1){
+          prevc = first.c;
+          c = second.c;
+          computePath();
+          int count = 0;
+          for(int t=0; t<nt; t++) {if(Mt[t]!=0) count++;}
+          if(count<tris){
+            tris = count;
+            loopPt0 = first;
+            loopPt1 = second;
           }
-          
-          if(((first.c+second+corns)%2!=1 && loop0.flipped==loop1.flipped)||((first.c+second+corns)%2!=0 && loop0.flipped!=loop1.flipped)){
-            c = loop1.get(0).c;
-            boolean fl = loop1.flipped;
-            loops.remove(M.loops.size()-1);
-            calcLoop(!fl);
-          }
-      
-      
         }
       }
+      
+      
+      
     }
     
     void showRibboning(int x)
