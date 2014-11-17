@@ -710,7 +710,7 @@ void EBstats(int lCs) {
       }
       */
       for(ArrayList<LoopPt> loop: loops){
-      if(!showRibbon) {
+      //if(!showRibbon) {
         //fill(blue);
         for (int i=0; i<loop.size()-1;i++){
 
@@ -734,7 +734,19 @@ void EBstats(int lCs) {
              vec T1 = loop.get(i+1).vel;
              pt curr = S(S(A(S(h1,P0), S(h2,P1)),h3,S(scale,T0)),h4,S(scale,T1));
              if (!first) {
-               showEdge(last, curr);
+               if(!showRibbon)
+               {
+                  showEdge(last, curr);
+               }else 
+               {
+                 if(i%2==0) fill(yellow); else fill(blue);
+                 vec rib1 = U(C(loop.get(i).vel, loop.get(i).norm));
+                 vec nRib1 = U(C(loop.get(i).norm, loop.get(i).vel));
+                 
+                 vec rib2 = U(C(loop.get(i+1).vel,loop.get(i+1).norm));
+                 vec nRib2 = U(C(loop.get(i+1).norm, loop.get(i+1).vel));
+                 beginShape(); vertex(S(last,rib1).x,S(last,rib1).y,S(last,rib1).z); vertex(S(last,nRib1).x,S(last,nRib1).y,S(last,nRib1).z); vertex(S(curr, nRib2).x,S(curr, nRib2).y,S(curr, nRib2).z); vertex(S(curr,rib2).x,S(curr,rib2).y,S(curr,rib2).z); endShape(); 
+               }
              } else {
                first = false;
              }
@@ -745,7 +757,7 @@ void EBstats(int lCs) {
         }
         
       }
-      }
+      //}
       }
 
       
