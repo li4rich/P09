@@ -743,31 +743,21 @@ void EBstats(int lCs) {
                   showEdge(last, curr);
                }else 
                {
-<<<<<<< HEAD
-                 if(i%2==0) {
-                // stroke(yellow);
-                 fill(yellow);
-               } else {
-             //  stroke(blue);
-                fill(blue);
-              }
-=======
+
                  //if(i%2==0) fill(yellow); else fill(blue);
                  
 
->>>>>>> dc521803195d072e2fb18c5df8b603b731e2ff1c
+
                  vec rib1 = U(C(loop.get(i).vel, loop.get(i).norm));
                  vec nRib1 = U(C(loop.get(i).norm, loop.get(i).vel));
                  
                  vec rib2 = U(C(loop.get(i+1).vel,loop.get(i+1).norm));
                  vec nRib2 = U(C(loop.get(i+1).norm, loop.get(i+1).vel));
-<<<<<<< HEAD
-                 beginShape(); vert(S(last,rib1)); vert(S(last,nRib1)); vert(S(curr, nRib2)); vert(S(curr,rib2));  endShape(); 
-=======
+
                  shapePointsUpper[shapePointsCount] = S(last,rib1); shapePointsLower[shapePointsCount] = S(last,nRib1); shapePointsCount++;
                  shapePointsUpper[shapePointsCount] = S(curr,rib2); shapePointsLower[shapePointsCount] = S(curr, nRib2); shapePointsCount++;
                  //vertex(S(last,rib1).x,S(last,rib1).y,S(last,rib1).z); vertex(S(last,nRib1).x,S(last,nRib1).y,S(last,nRib1).z); vertex(S(curr, nRib2).x,S(curr, nRib2).y,S(curr, nRib2).z); vertex(S(curr,rib2).x,S(curr,rib2).y,S(curr,rib2).z); 
->>>>>>> dc521803195d072e2fb18c5df8b603b731e2ff1c
+
                }
              } else {
                first = false;
@@ -938,17 +928,17 @@ void EBstats(int lCs) {
         for(LoopPt second: loop1){
           prevc = first.c;
           c = second.c;
-          calculatePath();
+          computePath();
           int count = 0;
           for(int t=0; t<nt; t++) {if(Mt[t]!=0) count++;}
           if(count<tris){
             tris = count;
-            corner0 = first;
-            corner1 = second;
+            loopPt0 = first;
+            loopPt1 = second;
           }
         }
       }
-          
+      
       
       
     }
