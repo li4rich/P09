@@ -732,7 +732,7 @@ void EBstats(int lCs) {
           pt last = P(0,0,0);
           float parts = 20;
           for (float si=0; si<=parts; si++){
-             float s = si/parts; 
+             float s = si/parts;
              float h1 =  2*pow(s,3) - 3*pow(s,2) + 1;                 // calculate basis function 1
              float h2 = -2*pow(s,3) + 3*pow(s,2);                    // calculate basis function 2
              float h3 =   pow(s,3) - 2*pow(s,2) + s;                // calculate basis function 3
@@ -747,6 +747,7 @@ void EBstats(int lCs) {
              if (!first) {
                if(!showRibbon)
                {
+
                   showEdge(last, curr);
                 }else 
                {
@@ -769,7 +770,14 @@ void EBstats(int lCs) {
                  
                  vec rib2 = U(C(loop.get(i).vel,curNormal));
                  vec nRib2 = U(C(curNormal, loop.get(i).vel));
-                 shapePointsUpper[shapePointsCount] = S(last,rib1); shapePointsLower[shapePointsCount] = S(last,nRib1); shapePointsCount++;
+                 
+                 if(showTube)
+                 {
+                   
+                 }else  
+                 {
+                   shapePointsUpper[shapePointsCount] = S(curr,rib1); shapePointsLower[shapePointsCount] = S(curr,nRib1); shapePointsCount++;
+                 }
                  //shapePointsUpper[shapePointsCount] =S(curr, nRib2);  shapePointsLower[shapePointsCount] = S(curr,rib2); shapePointsCount++;
                  //shapePointsUpper[shapePointsCount] = S(curr,rib2); shapePointsLower[shapePointsCount] = S(curr, nRib2); shapePointsCount++;
                  //vertex(S(last,rib1).x,S(last,rib1).y,S(last,rib1).z); vertex(S(last,nRib1).x,S(last,nRib1).y,S(last,nRib1).z); vertex(S(curr, nRib2).x,S(curr, nRib2).y,S(curr, nRib2).z); vertex(S(curr,rib2).x,S(curr,rib2).y,S(curr,rib2).z); 
@@ -786,7 +794,7 @@ void EBstats(int lCs) {
            {
              
              if(!switchColor) switchColor = true; else switchColor = false;
-                        /* beginShape();
+            /* beginShape();
              //print("before vertex");
              for(int spi = 0; spi<shapePointsUpper.length;spi++)
              {
@@ -811,11 +819,26 @@ void EBstats(int lCs) {
              //print("before vertex");
              for(int spi = 0; spi<shapePointsUpper.length;spi++)
              {
-               if(shapePointsUpper[spi]!=null) vertex(shapePointsUpper[spi].x,shapePointsUpper[spi].y,shapePointsUpper[spi].z);
+               if(showRibbon)
+               {
+                 if(shapePointsUpper[spi] != null) vertex(shapePointsUpper[spi].x,shapePointsUpper[spi].y,shapePointsUpper[spi].z);
+               }else if(showTube)
+               {
+                 if(shapePointsUpper[spi] !=null)
+                 {
+                  vertex(shapePointsUpper[spi].
+                 }
+               }
              }
              for (int spi = shapePointsLower.length-1; spi>=0;spi--)
              {
-              if(shapePointsLower[spi]!=null) vertex(shapePointsLower[spi].x,shapePointsLower[spi].y,shapePointsLower[spi].z); 
+               if(showRibbon)
+               {
+                if(shapePointsLower[spi] != null) vertex(shapePointsLower[spi].x,shapePointsLower[spi].y,shapePointsLower[spi].z); 
+               }else if(showTube)
+               {
+                 
+               }
              }
              endShape();
              //print("before refresh");
@@ -913,10 +936,11 @@ void EBstats(int lCs) {
         vec NB = triNorm(G[v(b)],G[v(n(b))],G[v(n(n(b)))]); //gonna be used for hermite i think
         vec NC = triNorm(G[v(c)],G[v(n(c))],G[v(n(n(c)))]);
         
+        
          pt CA1;
          pt CB1;
-  
-          if (!flipped){
+        
+        if (!flipped){
           CA1 = S(CA,2,NCA); 
           CB1 = S(CB,-2,NCB); 
         } else {
@@ -929,6 +953,7 @@ void EBstats(int lCs) {
         vec TC1 = S(.5,V(CA,CB));
         vec TCA = S(.5,V(C,A));
         vec TCB = S(-.5,V(B,C));
+        
         
         if(!flipped){
         if (flip) {loop.add(new LoopPt(C,TC,NC,c,0));loop.add(new LoopPt(CA1,TCA,V(CA,CA1),-1,1)); }

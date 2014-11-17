@@ -42,14 +42,14 @@ void keys() {
   if (key=='n') {M.next();};  
   if (key=='o') {M.opposite(); if (jumps) C.jump(M); };  
   if (key=='p') {M.previous();};  
-  if (key=='q') {M.calcLoop(false);};   
+  if (key=='q') {M.calcLoop(false);};  
   if (key=='r') {M.right(); if (jumps) C.jump(M);}; 
   if (key=='s') {M.swing();};   // select current corner
   if (key=='t') {};  
   if (key=='u') {M.unswing();};   
  // if (key=='v') {};  // used in updateView 
   if (key=='w') {if(!showRibbon){showRibbon = true; showDefaultRibbon = false; M.showDistance = true;}else{ showRibbon=false; M.showDistance = false; showDefaultRibbon = true;}};  //Chris Tansey Test Key
-  if (key=='x') {};   
+  if (key=='x') {if(!showTube) showTube = true; else showTube = false;};   
   if (key=='y') {M.loops.remove(M.loops.size()-1);};   
 //  if (key=='z') {};   // used in updateView
 
