@@ -1055,8 +1055,11 @@ void EBstats(int lCs) {
             loops.remove(M.loops.size()-1);
             calcLoop(!fl);
           }
+
           
           Loop merged = new Loop(loop0.nc+loop1.nc-4+corns*2);
+
+
           
           for(int i=0; i< loops.get(0).size();i++){
             LoopPt p1 = loops.get(0).get(i);
