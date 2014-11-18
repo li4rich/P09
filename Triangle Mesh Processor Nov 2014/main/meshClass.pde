@@ -749,7 +749,11 @@ void EBstats(int lCs) {
              if (!first) {
                if(!showRibbon)
                {
+                 if(weaveCounter<weaveTimer)
+                 {
                   showEdge(last, curr);
+                 }
+                  
                 }else 
                {
                  //if(i%2==0) fill(yellow); else fill(blue);
@@ -772,21 +776,11 @@ void EBstats(int lCs) {
                  vec rib2 = U(C(loop.get(i).vel,curNormal));
                  vec nRib2 = U(C(curNormal, loop.get(i).vel));
                  
-                 if(shapePointsCount>8)
-                 {
-                   if(showTube)
-                   {
-                     shapePointsSide2[shapePointsCount] = S(curr,U(C(loop.get(i+1).vel, rib1))); shapePointsSide1[shapePointsCount] = S(curr,U(C(rib1, loop.get(i+1).vel)));
-                   }
-                   shapePointsLower[shapePointsCount] = S(curr,rib1); shapePointsUpper[shapePointsCount] = S(curr,nRib1); shapePointsCount++;
-                 }else
-                 {
                    if(showTube)
                    {
                       shapePointsSide1[shapePointsCount] = S(curr,U(C(loop.get(i+1).vel, rib1))); shapePointsSide2[shapePointsCount] = S(curr,U(C(rib1, loop.get(i+1).vel)));
                    }  
                    shapePointsUpper[shapePointsCount] = S(curr,rib1); shapePointsLower[shapePointsCount] = S(curr,nRib1); shapePointsCount++;
-                 }
                  //shapePointsUpper[shapePointsCount] =S(curr, nRib2);  shapePointsLower[shapePointsCount] = S(curr,rib2); shapePointsCount++;
                  //shapePointsUpper[shapePointsCount] = S(curr,rib2); shapePointsLower[shapePointsCount] = S(curr, nRib2); shapePointsCount++;
                  //vertex(S(last,rib1).x,S(last,rib1).y,S(last,rib1).z); vertex(S(last,nRib1).x,S(last,nRib1).y,S(last,nRib1).z); vertex(S(curr, nRib2).x,S(curr, nRib2).y,S(curr, nRib2).z); vertex(S(curr,rib2).x,S(curr,rib2).y,S(curr,rib2).z); 
@@ -808,11 +802,9 @@ void EBstats(int lCs) {
            }else
            {
              beginShape();
-             int shit = 0;
              for(int spi = 0; spi<shapePointsUpper.length;spi++)
              {
-                 if(shapePointsUpper[spi] != null){ vertex(shapePointsUpper[spi].x,shapePointsUpper[spi].y,shapePointsUpper[spi].z); shit++;}
-                 if(shit>8) fill(red);
+                 if(shapePointsUpper[spi] != null){ vertex(shapePointsUpper[spi].x,shapePointsUpper[spi].y,shapePointsUpper[spi].z); }
              }
 
              if(showTube)
@@ -883,7 +875,8 @@ void EBstats(int lCs) {
                fill(blue);
              }
            }
-           //print("after switch");
+           C.jump(M); C.snapD(); C.pullE();
+           weaveCounter++;
       }
       //}
       }
