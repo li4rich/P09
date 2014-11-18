@@ -751,7 +751,7 @@ void EBstats(int lCs) {
              if (!first) {
                if(!showRibbon)
                {
-                 if(weaveCounter<weaveTimer)
+                 if(true/*weaveCounter<weaveTimer*/)
                  {
                   showEdge(last, curr);
                  }
@@ -806,7 +806,7 @@ void EBstats(int lCs) {
           
           
         }
-       if(weaveCounter<weaveTimer)
+       if(true /*weaveCounter<weaveTimer*/)
          {
            //print("rendering");
            if(i%2 == 0) 
@@ -891,7 +891,7 @@ void EBstats(int lCs) {
              }
            }
          }
-           C.jump(M); C.snapD(); C.pullE();
+           //C.jump(M); C.snapD(); C.pullE();
            weaveCounter++;
       }
       //}
