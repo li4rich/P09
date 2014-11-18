@@ -1222,6 +1222,10 @@ void EBstats(int lCs) {
             if(type<3) currc = p(currc);
             else currc = n(currc);
             
+            if (!(loop1.getC(n(currc))||loop1.getC(p(currc)))){
+                  print("first one didnt work\n");
+           }
+            
             int startc = currc;
 
             boolean ns1 = (loop0.getWithC(corn1).type%4==0) == (corns%2==0);
@@ -1245,6 +1249,7 @@ void EBstats(int lCs) {
                 up=!up;
                 prev = ccg(currc);
                 currc = nextc;
+                
                 
         
                 //the second loop//
