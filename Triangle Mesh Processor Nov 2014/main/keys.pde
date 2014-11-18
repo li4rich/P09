@@ -16,6 +16,7 @@ boolean showHelpText=true;
         text("DISTANCE: D:distance(how/hide) <:smaller, >:larger, 0:zero, I:isolation, P:path(between selections) ",0,0); translate(0,20);
         text("FILES: 'g' next file. 'G' read model from file, 'A' archive model.",0,0); translate(0,20);
         text("A:archiveModel, X:snapPicture , w:writeCorner",0,0); translate(0,20);
+        text("PROJECT: W:showLace, q: add loop, y: remove previous loop, Y: remove all loops   ",0,0); translate(0,20);
         text("PROJECT: W:showLace,   ",0,0); translate(0,20);
  
      popMatrix(); noFill();
