@@ -1030,29 +1030,32 @@ void EBstats(int lCs) {
         }
         if(same) {
           print ("loops overlap");
+          return;
         }
       }
       
-      int corns = 1000;
+      int corns = 100;
       LoopPt loopPt0 = loop0.get(0);
       LoopPt loopPt1= loop1.get(0);
       int corn1 = -1;
       int corn2 = -1;
       int type = -1;
+      int which = -1;
+      int whichc = 0;
       
-      //float a = 5/0;
+      //float a = 5/0;1604
       
       
       //FINDING THE CLOSEST PATH AND MARKING THE CORNERS
       for(LoopPt first: loop0.loop){
-        if (c>=0){
+        if (first.c>=0){
           boolean searching = true;
           //ArrayList<Integer> path1 = new ArrayList<Integer>(), path2 = new ArrayList<Integer>(), path3 = new ArrayList<Integer>(), path4 = new ArrayList<Integer>();
           int count=0;
           int c1 = n(first.c), c2 = n(first.c), c3=p(first.c), c4=p(first.c);
           boolean f = true, n = false;
           while (searching){
-            print("charlie");
+            //print("charlie\n");
             if(loop1.getC(n(c1))||loop1.getC(p(c1))){
               
               searching=false;
@@ -1063,6 +1066,8 @@ void EBstats(int lCs) {
                 if(loop1.getC(n(c1)))  {corn2 = n(c1); n=true;}
                 else corn2 = p(c1);
                 type = 1;
+                corns = count;
+                which=whichc;
                }
              }
              if(loop1.getC(n(c2))||loop1.getC(p(c2))){
@@ -1074,6 +1079,8 @@ void EBstats(int lCs) {
                 if(loop1.getC(n(c2))) {corn2 = n(c2);n=true;}
                 else corn2 = p(c2);
                 type =2;
+                corns = count;
+                which=whichc;
                }
              }
              if(loop1.getC(n(c3))||loop1.getC(p(c3))){
@@ -1085,6 +1092,8 @@ void EBstats(int lCs) {
                 if(loop1.getC(n(c3))) {corn2 = n(c3);n=true;}
                 else corn2 = p(c3);
                 type = 3;
+                corns = count;
+                which=whichc;
                }
              }
              if(loop1.getC(n(c4))||loop1.getC(p(c4))){
@@ -1096,6 +1105,8 @@ void EBstats(int lCs) {
                 if(loop1.getC(n(c4))) {corn2 = n(c4);n=true;}
                 else corn2 = p(c4);
                 type = 4;
+                corns = count;
+                which=whichc;
                }
              }
              if(f){
@@ -1112,34 +1123,45 @@ void EBstats(int lCs) {
             f=!f;
             count++;
           }
+          //print(whichc);
+          whichc++;
         }
+        
       }
       
-      print(corn2);
-      print(loop1.getC(corn2));
-     // int a = 5/0; 1645
+ 
+      print(which,corns);
+      print("\n");
+      print(corn1);
+      print(loop0.getC(corn1));
+      print("\n");
+      print(corn2,loop1.getC(corn2));
+      print("\n");
+      
+     //int a = 5/0; // 1701;
           int type1 = loop0.getWithC(corn1).type;
           int type2 = loop1.getWithC(corn2).type; 
           if(((type1+type2)%4==0 && corns%2==1 && loop0.flipped==loop1.flipped)||((type1+type2)%4!=0 && corns%2==0 && loop0.flipped!=loop1.flipped)){ //checks to see if one needs to be flipped
-            c = loop1.get(0).c;
+            c = loop0.get(0).c;
             boolean fl = loop1.flipped;
             loops.remove(loops.size()-1);
             calcLoop(!fl);
           }
 
           
-          Loop merged = new Loop(loop0.nc+loop1.nc-4+corns*2);
+          Loop merged = new Loop(nc);
 
 
           
           for(int i=0; i< loops.get(0).size();i++){
             LoopPt p1 = loops.get(0).get(i);
             if (p1.c!=corn1){
+              print(p1.c,",");
               merged.add(p1);
             } else {
-              
+              print(p1.c,"\n--------------------------------------------------------------------------\n");
               //first turnn
-              boolean up = (loop0.get(i).type==0) == !loops.get(0).flipped;
+              boolean up = (loop0.get(i).type==0) != !loops.get(0).flipped;
               boolean ns=false;
               int nextc=-1;
               int cc = p1.c;
@@ -1179,6 +1201,7 @@ void EBstats(int lCs) {
               vec normmm = triNorm(G[v(p1.c)],G[v(n(p1.c))],G[v(n(n(p1.c)))]);
               vec tangMid = S(.5,V(ccg(p1.c), ccg(nextc)));
               
+              
               merged.add(new LoopPt(p1.p,tang,normmm,p1.c,p1.type));
               merged.add(new LoopPt(nextPt,tangMid,normm,-1,p1.type+1));
               up=!up;
@@ -1191,7 +1214,7 @@ void EBstats(int lCs) {
               else { nextc = n(s(currc)); ns=true;}
               
               
-              
+              //int a = 5/0; // 1765;
               //continue the path if needed
                
               for(int j=0;j<corns;j++){                
@@ -1255,7 +1278,7 @@ void EBstats(int lCs) {
                 //the second loop//
                 int cou=corns;
                 while ((n(s(currc)) != startc) && (s(n(currc)) != startc)){
-                  print("alpha");
+                  //print("alpha");
                   if (ns1){ nextc = s(n(currc)); ns=false;}
                 else { nextc = n(s(currc)); ns=true;}
                    mid = midPt(G[v(n(currc))],G[v(currc)]); 
@@ -1377,6 +1400,7 @@ void EBstats(int lCs) {
         
         loops.clear();
         loops.add(merged);
+        print("done\n");
     }
     
     
