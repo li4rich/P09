@@ -793,6 +793,8 @@ void EBstats(int lCs) {
           
           
         }
+       if(weaveCounter<weaveTimer)
+         {
            //print("rendering");
            if(i%2 == 0) 
            {
@@ -875,6 +877,7 @@ void EBstats(int lCs) {
                fill(blue);
              }
            }
+         }
            C.jump(M); C.snapD(); C.pullE();
            weaveCounter++;
       }
