@@ -713,10 +713,10 @@ void EBstats(int lCs) {
       //if(!showRibbon) {
         //fill(blue);
         boolean switchColor = false;          
-        pt[] shapePointsUpper = new pt[(loop.size()-1)/2];
-        pt[] shapePointsLower = new pt[(loop.size()-1)/2];
-        pt[] shapePointsSide1 = new pt[(loop.size()-1)/2];
-        pt[] shapePointsSide2 = new pt[(loop.size()-1)/2];
+        pt[] shapePointsUpper = new pt[(20*loop.size())];
+        pt[] shapePointsLower = new pt[(20*loop.size())];
+        pt[] shapePointsSide1 = new pt[(20*loop.size())];
+        pt[] shapePointsSide2 = new pt[(20*loop.size())];
         int shapePointsCount = 0;
         for (int i=0; i<loop.size()-1;i++){
 
@@ -749,7 +749,6 @@ void EBstats(int lCs) {
              if (!first) {
                if(!showRibbon)
                {
-
                   showEdge(last, curr);
                 }else 
                {
@@ -775,9 +774,12 @@ void EBstats(int lCs) {
                  
                  if(showTube)
                  {
+                    print("adding side points");
                     shapePointsSide1[shapePointsCount] = S(curr,U(C(loop.get(i+1).vel, rib1))); shapePointsSide2[shapePointsCount] = S(curr,U(C(rib1, loop.get(i+1).vel)));
                  }  
+                 print("adding upper and lower: "+ shapePointsCount + " i: "+ i);
                  shapePointsUpper[shapePointsCount] = S(curr,rib1); shapePointsLower[shapePointsCount] = S(curr,nRib1); shapePointsCount++;
+                 print("after points are adding");
                  //shapePointsUpper[shapePointsCount] =S(curr, nRib2);  shapePointsLower[shapePointsCount] = S(curr,rib2); shapePointsCount++;
                  //shapePointsUpper[shapePointsCount] = S(curr,rib2); shapePointsLower[shapePointsCount] = S(curr, nRib2); shapePointsCount++;
                  //vertex(S(last,rib1).x,S(last,rib1).y,S(last,rib1).z); vertex(S(last,nRib1).x,S(last,nRib1).y,S(last,nRib1).z); vertex(S(curr, nRib2).x,S(curr, nRib2).y,S(curr, nRib2).z); vertex(S(curr,rib2).x,S(curr,rib2).y,S(curr,rib2).z); 
@@ -790,6 +792,7 @@ void EBstats(int lCs) {
           
           
         }
+           //print("rendering");
            if(i%2 == 0) 
            {
              
@@ -821,7 +824,7 @@ void EBstats(int lCs) {
              {
                  if(shapePointsUpper[spi] != null) vertex(shapePointsUpper[spi].x,shapePointsUpper[spi].y,shapePointsUpper[spi].z);
              }
-             
+
              if(showTube)
              {
 
@@ -875,11 +878,11 @@ void EBstats(int lCs) {
              
              endShape();
              //print("before refresh");
-             shapePointsUpper = new pt[(loop.size()-1)/2];
+             shapePointsUpper = new pt[(20*loop.size())];
              //print("after Upper declare");
-             shapePointsLower = new pt[(loop.size()-1)/2];
-             shapePointsSide1 = new pt[(loop.size()-1)/2];
-             shapePointsSide2 = new pt[(loop.size()-1)/2];
+             shapePointsLower = new pt[(20*loop.size())];
+             shapePointsSide1 = new pt[(20*loop.size())];
+             shapePointsSide2 = new pt[(20*loop.size())];
              //print("after lower declare");
              shapePointsCount=0;
              //print("after count");
