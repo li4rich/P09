@@ -1039,6 +1039,8 @@ void EBstats(int lCs) {
       int corn2 = -1;
       int type = -1;
       
+      //float a = 5/0;
+      
       
       //FINDING THE CLOSEST PATH AND MARKING THE CORNERS
       for(LoopPt first: loop0.loop){
@@ -1049,6 +1051,7 @@ void EBstats(int lCs) {
           int c1 = n(first.c), c2 = n(first.c), c3=p(first.c), c4=p(first.c);
           boolean f = true, n = false;
           while (searching){
+            print("charlie");
             if(loop1.getC(n(c1))||loop1.getC(p(c1))){
               
               searching=false;
@@ -1061,7 +1064,7 @@ void EBstats(int lCs) {
                 type = 1;
                }
              }
-             if(loop1.getC(c2)){
+             if(loop1.getC(n(c2))||loop1.getC(p(c2))){
               searching=false;
               if(count<corns){
                 //corns = path1.size();
@@ -1072,7 +1075,7 @@ void EBstats(int lCs) {
                 type =2;
                }
              }
-             if(loop1.getC(c3)){
+             if(loop1.getC(n(c3))||loop1.getC(p(c3))){
               searching=false;
               if(count<corns){
                 //corns = path1.size();
@@ -1083,7 +1086,7 @@ void EBstats(int lCs) {
                 type = 3;
                }
              }
-             if(count<corns){
+             if(loop1.getC(n(c4))||loop1.getC(p(c4))){
               searching=false;
               if(count<corns){
                 //corns = path1.size();
@@ -1110,12 +1113,16 @@ void EBstats(int lCs) {
           }
         }
       }
-          
-          int type1 = loop0.getWithC(corn1).type, type2 = loop1.getWithC(corn2).type; 
+      
+      print(corn2);
+      print(loop1.getC(corn2));
+     // int a = 5/0; 1645
+          int type1 = loop0.getWithC(corn1).type;
+          int type2 = loop1.getWithC(corn2).type; 
           if(((type1+type2)%4==0 && corns%2==1 && loop0.flipped==loop1.flipped)||((type1+type2)%4!=0 && corns%2==0 && loop0.flipped!=loop1.flipped)){ //checks to see if one needs to be flipped
             c = loop1.get(0).c;
             boolean fl = loop1.flipped;
-            loops.remove(M.loops.size()-1);
+            loops.remove(loops.size()-1);
             calcLoop(!fl);
           }
 
@@ -1164,8 +1171,8 @@ void EBstats(int lCs) {
               int scale = 2;
               if (!up) scale*=-1;
               pt nextPt = S(mid,scale,normm);
-              LoopPt prev = loop0.get((loop0.size()+i)%loop0.size());
-              vec tang = S(.5,V(prev.p, nextPt));
+              LoopPt prev1 = loop0.get((loop0.size()+i)%loop0.size());
+              vec tang = S(.5,V(prev1.p, nextPt));
               vec normmm = triNorm(G[v(p1.c)],G[v(n(p1.c))],G[v(n(n(p1.c)))]);
               vec tangMid = S(.5,V(ccg(p1.c), ccg(nextc)));
               
@@ -1175,7 +1182,7 @@ void EBstats(int lCs) {
               
               
               int typetrack = (p1.type+2)%4;
-              prev = ccg(currc);
+              pt prev = ccg(cc);
               int currc = nextc;
               if (ns){ nextc = s(n(currc)); ns=false;}
               else { nextc = n(s(currc)); ns=true;}
@@ -1192,15 +1199,15 @@ void EBstats(int lCs) {
                 
                 scale = 2;
                 if (!up) scale*=-1;
-                pt nextPt = S(mid,scale,normm);
+                nextPt = S(mid,scale,normm);
                 
                 tang = S(.5,V(prev, nextPt));
                 normmm = triNorm(G[v(currc)],G[v(n(currc))],G[v(n(n(currc)))]);
                 tangMid = S(.5,V(ccg(currc), ccg(nextc)));
                 
-                merged.add(new LoopPt(ccg(currc),tang,normmm,currc,p1.typetrack));
-                merged.add(new LoopPt(nextPt,tangMid,normm,-1,p1.typetrack+1));
-                typetrack = (typetrack+2)%4
+                merged.add(new LoopPt(ccg(currc),tang,normmm,currc,typetrack));
+                merged.add(new LoopPt(nextPt,tangMid,normm,-1,typetrack+1));
+                typetrack = (typetrack+2)%4;
                 up=!up;
                 prev = ccg(currc);
                 currc = nextc;
@@ -1212,7 +1219,7 @@ void EBstats(int lCs) {
             if(type<3) currc = p(currc);
             else currc = n(currc);
             
-            int startc = currc(c);
+            int startc = currc;
 
             boolean ns1 = (loop0.getWithC(corn1).type%4==0) == (corns%2==0);
             if (ns1){ nextc = s(n(currc)); ns=false;}
@@ -1223,37 +1230,61 @@ void EBstats(int lCs) {
                 
                 scale = 2;
                 if (!up) scale*=-1;
-                pt nextPt = S(mid,scale,normm);
+                nextPt = S(mid,scale,normm);
                 
                 tang = S(.5,V(prev, nextPt));
                 normmm = triNorm(G[v(currc)],G[v(n(currc))],G[v(n(n(currc)))]);
                 tangMid = S(.5,V(ccg(currc), ccg(nextc)));
                 
-                merged.add(new LoopPt(ccg(currc),tang,normmm,currc,p1.typetrack));
-                merged.add(new LoopPt(nextPt,tangMid,normm,-1,p1.typetrack+1));
-                typetrack = (typetrack+2)%4
+                merged.add(new LoopPt(ccg(currc),tang,normmm,currc,typetrack));
+                merged.add(new LoopPt(nextPt,tangMid,normm,-1,typetrack+1));
+                typetrack = (typetrack+2)%4;
                 up=!up;
                 prev = ccg(currc);
                 currc = nextc;
                 
-                while (n(s(currc)) != startc || s(n(currc)) != startc){
+        
+                
+                while ((n(s(currc)) != startc) && (s(n(currc)) != startc)){
+                  print("alpha");
+                  if (ns1){ nextc = s(n(currc)); ns=false;}
+                else { nextc = n(s(currc)); ns=true;}
+                   mid = midPt(G[v(n(currc))],G[v(currc)]); 
+                normm = U(M(Nv[v(currc)],Nv[v(n(currc))]));      
+                
+                scale = 2;
+                if (!up) scale*=-1;
+                nextPt = S(mid,scale,normm);
+                
+                tang = S(.5,V(prev, nextPt));
+                normmm = triNorm(G[v(currc)],G[v(n(currc))],G[v(n(n(currc)))]);
+                tangMid = S(.5,V(ccg(currc), ccg(nextc)));
+                
+                merged.add(new LoopPt(ccg(currc),tang,normmm,currc,typetrack));
+                merged.add(new LoopPt(nextPt,tangMid,normm,-1,typetrack+1));
+                typetrack = (typetrack+2)%4;
+                up=!up;
+                prev = ccg(currc);
+                currc = nextc;
                   
                 }
-            
-            
-            
-            
-            
+                
+                /*
+                int o = 0;
+                while (o<50){
+                  print("beta");
+                  stroke(yellow); fill(yellow); merged.get(o).p.show(5);
+                  o++;
+                  
+                }
+                */
             
           }
           
           
           
         }
-      }
-      
-      
-      
+    }
     
     
     
