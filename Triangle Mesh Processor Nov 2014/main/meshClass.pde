@@ -983,56 +983,79 @@ void EBstats(int lCs) {
       }
       Loop loop0 = loops.get(0);
       Loop loop1 = loops.get(1);
+      
+      if(loop0.nc==loop1.nc){
+        boolean same = true;
+        for (int i=0;i<loop1.nc;i++){
+           if(loop1.getC(i)!=loop0.getC(i)){
+             same=false;
+             break;
+           }
+        }
+        if(same) {
+          print ("loops overlap");
+        }
+      }
+      
       int corns = 1000;
       LoopPt loopPt0 = loop0.get(0);
       LoopPt loopPt1= loop1.get(0);
       int corn1 = -1;
       int corn2 = -1;
       int type = -1;
+      
+      
+      //FINDING THE CLOSEST PATH AND MARKING THE CORNERS
       for(LoopPt first: loop0.loop){
         if (c>=0){
           boolean searching = true;
-          ArrayList<Integer> path1 = new ArrayList<Integer>(), path2 = new ArrayList<Integer>(), path3 = new ArrayList<Integer>(), path4 = new ArrayList<Integer>();
+          //ArrayList<Integer> path1 = new ArrayList<Integer>(), path2 = new ArrayList<Integer>(), path3 = new ArrayList<Integer>(), path4 = new ArrayList<Integer>();
+          int count=0;
           int c1 = n(first.c), c2 = n(first.c), c3=p(first.c), c4=p(first.c);
-          boolean f = true;
+          boolean f = true, n = false;
           while (searching){
-            if(loop1.getC(c1)){
+            if(loop1.getC(n(c1))||loop1.getC(p(c1))){
+              
               searching=false;
-              if(corns>path1.size()){
-                corns = path1.size();
+              if(count<corns){
+                //corns = path1.size();
                 loopPt0 = first;
                 corn1 = first.c;
-                corn2 = c1;
+                if(loop1.getC(n(c1)))  {corn2 = n(c1); n=true;}
+                else corn2 = p(c1);
                 type = 1;
                }
              }
              if(loop1.getC(c2)){
               searching=false;
-              if(corns>path1.size()){
-                corns = path1.size();
+              if(count<corns){
+                //corns = path1.size();
                 loopPt0 = first;
                 corn1 = first.c;
-                corn2 = c2;
+                if(loop1.getC(n(c2))) {corn2 = n(c2);n=true;}
+                else corn2 = p(c2);
                 type =2;
                }
              }
              if(loop1.getC(c3)){
               searching=false;
-              if(corns>path1.size()){
-                corns = path1.size();
+              if(count<corns){
+                //corns = path1.size();
                 loopPt0 = first;
                 corn1 = first.c;
-                corn2 = c3;
+                if(loop1.getC(n(c3))) {corn2 = n(c3);n=true;}
+                else corn2 = p(c3);
                 type = 3;
                }
              }
-             if(loop1.getC(c4)){
+             if(count<corns){
               searching=false;
-              if(corns>path1.size()){
-                corns = path1.size();
+              if(count<corns){
+                //corns = path1.size();
                 loopPt0 = first;
                 corn1 = first.c;
-                corn2 = c4;
+                if(loop1.getC(n(c4))) {corn2 = n(c4);n=true;}
+                else corn2 = p(c4);
                 type = 4;
                }
              }
@@ -1047,9 +1070,14 @@ void EBstats(int lCs) {
                c3=s(n(c3));
                c4=n(s(c4));
           }
+            f=!f;
+            count++;
+          }
+        }
+      }
           
           int type1 = loop0.getWithC(corn1).type, type2 = loop1.getWithC(corn2).type; 
-          if(((type1+type2)%4==0 && corns%2==0 && loop0.flipped==loop1.flipped)||((type1+type2)%4!=0 && corns%2==1 && loop0.flipped!=loop1.flipped)){
+          if(((type1+type2)%4==0 && corns%2==1 && loop0.flipped==loop1.flipped)||((type1+type2)%4!=0 && corns%2==0 && loop0.flipped!=loop1.flipped)){ //checks to see if one needs to be flipped
             c = loop1.get(0).c;
             boolean fl = loop1.flipped;
             loops.remove(M.loops.size()-1);
@@ -1063,38 +1091,39 @@ void EBstats(int lCs) {
           
           for(int i=0; i< loops.get(0).size();i++){
             LoopPt p1 = loops.get(0).get(i);
-            if (first.c!=corn1){
-            merged.add(first);
+            if (p1.c!=corn1){
+              merged.add(p1);
             } else {
               boolean up = (loop0.get(i).type==0) == !loops.get(0).flipped;
-              boolean ns;
-              int nextc;
+              boolean ns=false;
+              int nextc=-1;
+              int cc = p1.c;
               pt mid = P(0,0,0);
               vec normm = V(0,0,0);
               switch(type){
                case 1:
-                  nextc = n(s(n(first.c)));
+                  nextc = n(s(n(p1.c)));
                   ns = true;
-                  mid = midPt(G[v(n(c))],G[v(c)]); 
-                  normm = U(M(Nv[v(c)],Nv[v(n(c))]));
+                  mid = midPt(G[v(n(cc))],G[v(cc)]); 
+                  normm = U(M(Nv[v(cc)],Nv[v(n(cc))]));
                   break; 
                case 2:
-                  nextc = s(n(n(first.c)));
+                  nextc = s(n(n(p1.c)));
                   ns = false;
-                  mid = midPt(G[v(n(c))],G[v(p(c))]); 
-                  normm = U(M(Nv[v(p(c))],Nv[v(n(c))]));
+                  mid = midPt(G[v(n(cc))],G[v(p(cc))]); 
+                  normm = U(M(Nv[v(p(cc))],Nv[v(n(cc))]));
                   break;
                case 3:
-                  nextc = n(s(p(first.c)));
+                  nextc = n(s(p(p1.c)));
                   ns = true;
-                  mid = midPt(G[v(n(c))],G[v(p(c))]); 
-                  normm = U(M(Nv[v(p(c))],Nv[v(n(c))]));
+                  mid = midPt(G[v(n(cc))],G[v(p(cc))]); 
+                  normm = U(M(Nv[v(p(cc))],Nv[v(n(cc))]));
                   break;
                case 4:
-                  nextc = s(n(p(first.c)));
+                  nextc = s(n(p(p1.c)));
                   ns = false;
-                  mid = midPt(G[v(p(c))],G[v(c)]); 
-                  normm = U(M(Nv[v(c)],Nv[v(p(c))]));
+                  mid = midPt(G[v(p(cc))],G[v(cc)]); 
+                  normm = U(M(Nv[v(cc)],Nv[v(p(cc))]));
                   break;
               }
               int scale = 2;
@@ -1102,15 +1131,96 @@ void EBstats(int lCs) {
               pt nextPt = S(mid,scale,normm);
               LoopPt prev = loop0.get((loop0.size()+i)%loop0.size());
               vec tang = S(.5,V(prev.p, nextPt));
+              vec normmm = triNorm(G[v(p1.c)],G[v(n(p1.c))],G[v(n(n(p1.c)))]);
+              vec tangMid = S(.5,V(ccg(p1.c), ccg(nextc)));
+              
+              merged.add(new LoopPt(p1.p,tang,normmm,p1.c,p1.type));
+              merged.add(new LoopPt(nextPt,tangMid,normm,-1,p1.type+1));
+              up=!up;
+              
+              
+              int typetrack = (p1.type+2)%4;
+              prev = ccg(currc);
+              int currc = nextc;
+              if (ns){ nextc = s(n(currc)); ns=false;}
+              else { nextc = n(s(currc)); ns=true;}
+              
+              
+              
+              //continue the path if needed
+               
+              for(int j=0;j<corns;j++){                
+                
+                ns = true;
+                mid = midPt(G[v(n(currc))],G[v(currc)]); 
+                normm = U(M(Nv[v(currc)],Nv[v(n(currc))]));      
+                
+                scale = 2;
+                if (!up) scale*=-1;
+                pt nextPt = S(mid,scale,normm);
+                
+                tang = S(.5,V(prev, nextPt));
+                normmm = triNorm(G[v(currc)],G[v(n(currc))],G[v(n(n(currc)))]);
+                tangMid = S(.5,V(ccg(currc), ccg(nextc)));
+                
+                merged.add(new LoopPt(ccg(currc),tang,normmm,currc,p1.typetrack));
+                merged.add(new LoopPt(nextPt,tangMid,normm,-1,p1.typetrack+1));
+                typetrack = (typetrack+2)%4
+                up=!up;
+                prev = ccg(currc);
+                currc = nextc;
+                if (ns){ nextc = s(n(currc)); ns=false;}
+                else { nextc = n(s(currc)); ns=true;}
             }
+            
+            //reset for 2
+            if(type<3) currc = p(currc);
+            else currc = n(currc);
+            
+            int startc = currc(c);
+
+            boolean ns1 = (loop0.getWithC(corn1).type%4==0) == (corns%2==0);
+            if (ns1){ nextc = s(n(currc)); ns=false;}
+            else { nextc = n(s(currc)); ns=true;}
+            
+            mid = midPt(G[v(n(currc))],G[v(currc)]); 
+                normm = U(M(Nv[v(currc)],Nv[v(n(currc))]));      
+                
+                scale = 2;
+                if (!up) scale*=-1;
+                pt nextPt = S(mid,scale,normm);
+                
+                tang = S(.5,V(prev, nextPt));
+                normmm = triNorm(G[v(currc)],G[v(n(currc))],G[v(n(n(currc)))]);
+                tangMid = S(.5,V(ccg(currc), ccg(nextc)));
+                
+                merged.add(new LoopPt(ccg(currc),tang,normmm,currc,p1.typetrack));
+                merged.add(new LoopPt(nextPt,tangMid,normm,-1,p1.typetrack+1));
+                typetrack = (typetrack+2)%4
+                up=!up;
+                prev = ccg(currc);
+                currc = nextc;
+                
+                while (n(s(currc)) != startc || s(n(currc)) != startc){
+                  
+                }
+            
+            
+            
+            
+            
+            
           }
+          
+          
+          
         }
       }
       
       
       
-    }
-    }
+    
+    
     
     void showRibboning(int x)
     {
