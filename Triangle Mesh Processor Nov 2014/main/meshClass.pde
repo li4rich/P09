@@ -715,6 +715,8 @@ void EBstats(int lCs) {
         boolean switchColor = false;          
         pt[] shapePointsUpper = new pt[(loop.size()-1)/2];
         pt[] shapePointsLower = new pt[(loop.size()-1)/2];
+        pt[] shapePointsSide1 = new pt[(loop.size()-1)/2];
+        pt[] shapePointsSide2 = new pt[(loop.size()-1)/2];
         int shapePointsCount = 0;
         for (int i=0; i<loop.size()-1;i++){
 
@@ -773,11 +775,9 @@ void EBstats(int lCs) {
                  
                  if(showTube)
                  {
-                   
-                 }else  
-                 {
-                   shapePointsUpper[shapePointsCount] = S(curr,rib1); shapePointsLower[shapePointsCount] = S(curr,nRib1); shapePointsCount++;
-                 }
+                    shapePointsSide1[shapePointsCount] = S(curr,U(C(loop.get(i+1).vel, rib1))); shapePointsSide2[shapePointsCount] = S(curr,U(C(rib1, loop.get(i+1).vel)));
+                 }  
+                 shapePointsUpper[shapePointsCount] = S(curr,rib1); shapePointsLower[shapePointsCount] = S(curr,nRib1); shapePointsCount++;
                  //shapePointsUpper[shapePointsCount] =S(curr, nRib2);  shapePointsLower[shapePointsCount] = S(curr,rib2); shapePointsCount++;
                  //shapePointsUpper[shapePointsCount] = S(curr,rib2); shapePointsLower[shapePointsCount] = S(curr, nRib2); shapePointsCount++;
                  //vertex(S(last,rib1).x,S(last,rib1).y,S(last,rib1).z); vertex(S(last,nRib1).x,S(last,nRib1).y,S(last,nRib1).z); vertex(S(curr, nRib2).x,S(curr, nRib2).y,S(curr, nRib2).z); vertex(S(curr,rib2).x,S(curr,rib2).y,S(curr,rib2).z); 
@@ -819,32 +819,67 @@ void EBstats(int lCs) {
              //print("before vertex");
              for(int spi = 0; spi<shapePointsUpper.length;spi++)
              {
-               if(showRibbon)
-               {
                  if(shapePointsUpper[spi] != null) vertex(shapePointsUpper[spi].x,shapePointsUpper[spi].y,shapePointsUpper[spi].z);
-               }else if(showTube)
-               {
-                 if(shapePointsUpper[spi] !=null)
-                 {
-                  //vertex(shapePointsUpper[spi].
-                 }
-               }
              }
-             for (int spi = shapePointsLower.length-1; spi>=0;spi--)
+             
+             if(showTube)
              {
-               if(showRibbon)
-               {
-                if(shapePointsLower[spi] != null) vertex(shapePointsLower[spi].x,shapePointsLower[spi].y,shapePointsLower[spi].z); 
-               }else if(showTube)
-               {
+
+                for(int spi = shapePointsSide2.length-1; spi >= 0;spi--)
+                 {
+                    if(shapePointsSide2[spi] != null) vertex(shapePointsSide2[spi].x,shapePointsSide2[spi].y,shapePointsSide2[spi].z);
+                 }
+                 endShape();
                  
+                 beginShape();
+                 //print("before vertex");
+                 for(int spi = 0; spi<shapePointsUpper.length;spi++)
+                 {
+                     if(shapePointsUpper[spi] != null) vertex(shapePointsUpper[spi].x,shapePointsUpper[spi].y,shapePointsUpper[spi].z);
+                 }
+                 
+                 for(int spi = shapePointsSide1.length-1; spi >= 0 ;spi--)
+                 {
+                    if(shapePointsSide1[spi] != null) vertex(shapePointsSide1[spi].x,shapePointsSide1[spi].y,shapePointsSide1[spi].z);
+                 }
+                 endShape();
+                 
+                 beginShape();
+                 for (int spi = 0; spi < shapePointsLower.length;spi++)
+                 {
+                    if(shapePointsLower[spi] != null) vertex(shapePointsLower[spi].x,shapePointsLower[spi].y,shapePointsLower[spi].z); 
+                 }
+                 
+                for(int spi = shapePointsSide1.length-1; spi >= 0 ;spi--)
+                 {
+                    if(shapePointsSide1[spi] != null) vertex(shapePointsSide1[spi].x,shapePointsSide1[spi].y,shapePointsSide1[spi].z);
+                 }
+                 endShape();
+                 
+                 beginShape();
+                 for (int spi = 0; spi < shapePointsLower.length;spi++)
+                 {
+                    if(shapePointsLower[spi] != null) vertex(shapePointsLower[spi].x,shapePointsLower[spi].y,shapePointsLower[spi].z); 
+                 }
+                 for(int spi = shapePointsSide2.length-1; spi >= 0;spi--)
+                 {
+                    if(shapePointsSide2[spi] != null) vertex(shapePointsSide2[spi].x,shapePointsSide2[spi].y,shapePointsSide2[spi].z);
+                 }
+             }else 
+             {             
+               for (int spi = shapePointsLower.length-1; spi>=0;spi--)
+               {
+                  if(shapePointsLower[spi] != null) vertex(shapePointsLower[spi].x,shapePointsLower[spi].y,shapePointsLower[spi].z); 
                }
              }
+             
              endShape();
              //print("before refresh");
              shapePointsUpper = new pt[(loop.size()-1)/2];
              //print("after Upper declare");
              shapePointsLower = new pt[(loop.size()-1)/2];
+             shapePointsSide1 = new pt[(loop.size()-1)/2];
+             shapePointsSide2 = new pt[(loop.size()-1)/2];
              //print("after lower declare");
              shapePointsCount=0;
              //print("after count");
