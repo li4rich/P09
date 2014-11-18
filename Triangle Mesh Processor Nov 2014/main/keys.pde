@@ -36,7 +36,7 @@ void keys() {
   if (key=='i') {};   
   if (key=='h') { }; 
   if (key=='j') {if (M.showEBrec) {M.EBjump();} C.jump(M); C.snapD(); C.pullE();}
-  if (key=='k') {};  
+  if (key=='k') {M.mergeLoops();};  
   if (key=='l') {M.left(); if (jumps) C.jump(M);};
 // if (key=='m') {C.setMark(); M.hitTriangle();};   // also used in updateView to move vertex
   if (key=='n') {M.next();};  

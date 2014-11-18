@@ -721,7 +721,7 @@ void EBstats(int lCs) {
         for (int i=0; i<loop.size()-1;i++){
 
           
-          if(loop.get(i).type==0) {stroke(blue); showLineFrom(loop.get(i).p,S(3,U(loop.get(i).vel))); P(loop.get(i).p).show(1);}
+          //if(loop.get(i).type==0) {stroke(blue); showLineFrom(loop.get(i).p,S(3,U(loop.get(i).vel))); P(loop.get(i).p).show(1);}
           if(!loop.flipped){
            if(i%4>1) stroke(green);
            else stroke(red);
@@ -729,6 +729,7 @@ void EBstats(int lCs) {
            if(i%4<2) stroke(green);
            else stroke(red);
            }
+           
           
           boolean first = true;
           pt last = P(0,0,0);
@@ -746,6 +747,7 @@ void EBstats(int lCs) {
              vec T0 = loop.get(i).vel;
              vec T1 = loop.get(i+1).vel;
              pt curr = S(S(A(S(h1,P0), S(h2,P1)),h3,S(scale,T0)),h4,S(scale,T1));
+             //if(si==10) {fill(blue); stroke(blue); curr.show(1);}
              if (!first) {
                if(!showRibbon)
                {
@@ -772,7 +774,7 @@ void EBstats(int lCs) {
                  vec rib2 = U(C(loop.get(i).vel,curNormal));
                  vec nRib2 = U(C(curNormal, loop.get(i).vel));
                  
-                 if(shapePointsCount>8)
+                 if(shapePointsCount>100)
                  {
                    if(showTube)
                    {
@@ -1128,6 +1130,8 @@ void EBstats(int lCs) {
             if (p1.c!=corn1){
               merged.add(p1);
             } else {
+              
+              //first turnn
               boolean up = (loop0.get(i).type==0) == !loops.get(0).flipped;
               boolean ns=false;
               int nextc=-1;
@@ -1185,7 +1189,7 @@ void EBstats(int lCs) {
                
               for(int j=0;j<corns;j++){                
                 
-                ns = true;
+                //ns = true;
                 mid = midPt(G[v(n(currc))],G[v(currc)]); 
                 normm = U(M(Nv[v(currc)],Nv[v(n(currc))]));      
                 
@@ -1236,7 +1240,8 @@ void EBstats(int lCs) {
                 currc = nextc;
                 
         
-                
+                //the second loop//
+                int cou=corns;
                 while ((n(s(currc)) != startc) && (s(n(currc)) != startc)){
                   print("alpha");
                   if (ns1){ nextc = s(n(currc)); ns=false;}
@@ -1258,8 +1263,87 @@ void EBstats(int lCs) {
                 up=!up;
                 prev = ccg(currc);
                 currc = nextc;
+                cou++;
                   
                 }
+                
+                //turn back
+                if (cou%2==0){
+                   if(type<3) currc = p(currc);
+                    else currc = n(currc);
+                } else {
+                  if(type>2) currc = p(currc);
+                    else currc = n(currc);
+                }
+                mid = midPt(G[v(n(currc))],G[v(currc)]); 
+                normm = U(M(Nv[v(currc)],Nv[v(n(currc))]));      
+                
+                scale = 2;
+                if (!up) scale*=-1;
+                nextPt = S(mid,scale,normm);
+                
+                tang = S(.5,V(prev, nextPt));
+                normmm = triNorm(G[v(currc)],G[v(n(currc))],G[v(n(n(currc)))]);
+                tangMid = S(.5,V(ccg(currc), ccg(nextc)));
+                
+                merged.add(new LoopPt(ccg(currc),tang,normmm,currc,typetrack));
+                merged.add(new LoopPt(nextPt,tangMid,normm,-1,typetrack+1));
+                typetrack = (typetrack+2)%4;
+                up=!up;
+                prev = ccg(currc);
+                currc = nextc;
+                
+                
+                //second patch
+                for(int j=0;j<corns;j++){                
+                
+                if (ns){ nextc = s(n(currc)); ns=false;}
+                else { nextc = n(s(currc)); ns=true;}
+                mid = midPt(G[v(n(currc))],G[v(currc)]); 
+                normm = U(M(Nv[v(currc)],Nv[v(n(currc))]));      
+                
+                scale = 2;
+                if (!up) scale*=-1;
+                nextPt = S(mid,scale,normm);
+                
+                tang = S(.5,V(prev, nextPt));
+                normmm = triNorm(G[v(currc)],G[v(n(currc))],G[v(n(n(currc)))]);
+                tangMid = S(.5,V(ccg(currc), ccg(nextc)));
+                
+                merged.add(new LoopPt(ccg(currc),tang,normmm,currc,typetrack));
+                merged.add(new LoopPt(nextPt,tangMid,normm,-1,typetrack+1));
+                typetrack = (typetrack+2)%4;
+                up=!up;
+                prev = ccg(currc);
+                currc = nextc;
+                
+            }
+            
+            if (!(loop0.getC(n(currc))||loop0.getC(p(currc)))){
+              print("SECOND CONNECT DIDNT WORK");
+            }
+            
+            //last turn
+            if(loop0.getC(n(currc))) currc=n(currc);
+            else p(currc);
+            
+            mid = midPt(G[v(n(currc))],G[v(currc)]); 
+                normm = U(M(Nv[v(currc)],Nv[v(n(currc))]));      
+                
+                scale = 2;
+                if (!up) scale*=-1;
+                nextPt = S(mid,scale,normm);
+                
+                tang = S(.5,V(prev, nextPt));
+                normmm = triNorm(G[v(currc)],G[v(n(currc))],G[v(n(n(currc)))]);
+                tangMid = S(.5,V(ccg(currc), ccg(nextc)));
+                
+                merged.add(new LoopPt(ccg(currc),tang,normmm,currc,typetrack));
+                merged.add(new LoopPt(nextPt,tangMid,normm,-1,typetrack+1));
+                
+                i++;
+                
+                
                 
                 /*
                 int o = 0;
@@ -1270,12 +1354,17 @@ void EBstats(int lCs) {
                   
                 }
                 */
+                
+                
             
           }
           
           
           
         }
+        
+        loops.clear();
+        loops.add(merged);
     }
     
     
