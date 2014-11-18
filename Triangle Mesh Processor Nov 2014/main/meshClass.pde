@@ -793,6 +793,7 @@ void EBstats(int lCs) {
                       shapePointsSide1[shapePointsCount] = S(curr,U(C(loop.get(i+1).vel, rib1))); shapePointsSide2[shapePointsCount] = S(curr,U(C(rib1, loop.get(i+1).vel)));
                    }  
                    shapePointsUpper[shapePointsCount] = S(curr,rib1); shapePointsLower[shapePointsCount] = S(curr,nRib1); shapePointsCount++;
+                 }
                  //shapePointsUpper[shapePointsCount] =S(curr, nRib2);  shapePointsLower[shapePointsCount] = S(curr,rib2); shapePointsCount++;
                  //shapePointsUpper[shapePointsCount] = S(curr,rib2); shapePointsLower[shapePointsCount] = S(curr, nRib2); shapePointsCount++;
                  //vertex(S(last,rib1).x,S(last,rib1).y,S(last,rib1).z); vertex(S(last,nRib1).x,S(last,nRib1).y,S(last,nRib1).z); vertex(S(curr, nRib2).x,S(curr, nRib2).y,S(curr, nRib2).z); vertex(S(curr,rib2).x,S(curr,rib2).y,S(curr,rib2).z); 
